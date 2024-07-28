@@ -23,8 +23,8 @@
   alembic upgrade head
 ```
 
-*Run project
-*Create .env file in root folder. Then copy .env.example patse into ,env
+* Run project
+* Create .env file in root folder. Then copy .env.example patse into ,env
 
 ```bash
   python src/main.py
