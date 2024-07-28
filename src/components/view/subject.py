@@ -48,9 +48,9 @@ class UpdateDialog(QDialog):
 
     def init_ui(self):
         layout = QFormLayout(self)
-        self.order_input = QLineEdit(str(self.row_data[0]), self)
-        self.code_input = QLineEdit(self.row_data[1], self)
-        self.name_input = QLineEdit(self.row_data[2], self)
+        self.order_input = QLineEdit(str(self.row_data[1]), self)  # Order
+        self.code_input = QLineEdit(self.row_data[2], self)       # Code
+        self.name_input = QLineEdit(self.row_data[3], self)       # Name
         layout.addRow('Order', self.order_input)
         layout.addRow('Code', self.code_input)
         layout.addRow('Name', self.name_input)
@@ -110,8 +110,8 @@ class Subject(QWidget):
         create_button.clicked.connect(self.open_create_dialog)
         content_layout.addWidget(create_button)
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(5)
-        self.table_widget.setHorizontalHeaderLabels(['Order', 'Code', 'Name', 'Update', 'Delete'])
+        self.table_widget.setColumnCount(6)
+        self.table_widget.setHorizontalHeaderLabels(['Id', 'Order', 'Code', 'Name', 'Update', 'Delete'])
         content_layout.addWidget(self.table_widget)
         content_widget.setLayout(content_layout)
         scroll_area.setWidget(content_widget)
@@ -163,5 +163,5 @@ class Subject(QWidget):
                 update_button.clicked.connect(lambda checked, row=row_index: self.open_update_dialog(row))
                 delete_button = QPushButton('Delete')
                 delete_button.clicked.connect(lambda checked, row=row_index: self.open_delete_dialog(row))
-                self.table_widget.setCellWidget(row_index, 3, update_button)
-                self.table_widget.setCellWidget(row_index, 4, delete_button)
+                self.table_widget.setCellWidget(row_index, 4, update_button)
+                self.table_widget.setCellWidget(row_index, 5, delete_button)
