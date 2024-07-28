@@ -1,7 +1,7 @@
 ## Quick start
 
-Required: Python@3.12
-Project use pipenv to manage library
+* Required: Python@3.12
+* Project use pipenv to manage library
 
 ```bash
   pip install pipenv
