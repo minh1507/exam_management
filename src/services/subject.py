@@ -1,14 +1,17 @@
 import mysql.connector
+from dotenv import load_dotenv
+import os
 
+load_dotenv()
 class SubjectService:
     def __init__(self):
         self.db_config = {
-            'host': '127.0.0.1',
-            'user': 'root',
-            'port': '1024',
-            'password': '123456',
-            'database': 'exam',
-            'collation': 'utf8mb4_bin'
+            'host': os.getenv("DB_HOST"),
+            'user': os.getenv("DB_USER"),
+            'port': os.getenv("DB_PORT"),
+            'password': os.getenv("DB_PASSWORD"),
+            'database': os.getenv("DB_NAME"),
+            'collation': os.getenv("DB_COLLATION"),
         }
 
     def get_database_connection(self):
