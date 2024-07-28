@@ -24,6 +24,8 @@ Generate and run migration
 ```
 
 Run project
+Create .env file in root folder. Then copy .env.example patse into ,env
+
 ```bash
   python src/main.py
 ```
