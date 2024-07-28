@@ -1,4 +1,5 @@
 from PyQt5.QtWidgets import QPushButton, QWidget, QHBoxLayout, QLabel
+from PyQt5.QtCore import Qt
 
 def header(self):
     header_widget = QWidget()
@@ -16,6 +17,7 @@ def header(self):
     title_label.setStyleSheet("""
         color: white;
     """)
+    title_label.setAlignment(Qt.AlignCenter)
 
     exit_button = QPushButton('✖', self)
     exit_button.setFixedSize(30, 30)

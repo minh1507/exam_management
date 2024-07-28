@@ -3,10 +3,12 @@ from PyQt5.QtCore import Qt
 
 def tool_bar(self, action):
     toolbar_widget = QToolBar()
+    
     toolbar_widget.setStyleSheet("""
             QToolBar {
                 background-color: white;
                 border: 1px solid grey;
+                padding: unset !important;
             }
             QToolBar QToolButton {
                 color: black;

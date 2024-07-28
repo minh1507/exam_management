@@ -11,7 +11,9 @@ Base = declarative_base()
 class User(Base):
     __tablename__ = 'users'
     id = Column(Integer, primary_key=True)
-    name = Column(String(50))
+    name = Column(String(50), nullable=False)
+    code = Column(String(50), unique=True, nullable=False)
+    order = Column(Integer, nullable=False)
 
 DATABASE_URL = os.getenv("DATABASE_HOST")
 engine = create_engine(DATABASE_URL)
