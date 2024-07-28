@@ -1,6 +1,6 @@
 from PyQt5.QtWidgets import (
     QWidget, QVBoxLayout, QLabel, QScrollArea, QTableWidgetItem, QTableWidget, QFrame,
-    QPushButton, QDialog, QDialogButtonBox, QLineEdit, QFormLayout, QMessageBox
+    QPushButton, QDialog, QDialogButtonBox, QLineEdit, QFormLayout, QMessageBox, QHBoxLayout, QHeaderView
 )
 from PyQt5.QtCore import Qt
 from ..layout.breadcrumb import Breadcrumb
@@ -110,8 +110,8 @@ class Subject(QWidget):
         create_button.clicked.connect(self.open_create_dialog)
         content_layout.addWidget(create_button)
         self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(6)
-        self.table_widget.setHorizontalHeaderLabels(['Id', 'Order', 'Code', 'Name', 'Update', 'Delete'])
+        self.table_widget.setColumnCount(5)
+        self.table_widget.setHorizontalHeaderLabels(['Id', 'Order', 'Code', 'Name', 'Action'])
         content_layout.addWidget(self.table_widget)
         content_widget.setLayout(content_layout)
         scroll_area.setWidget(content_widget)
@@ -156,12 +156,29 @@ class Subject(QWidget):
         else:
             self.data = data
             self.table_widget.setRowCount(len(self.data))
+            self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
             for row_index, row_data in enumerate(self.data):
                 for col_index, item in enumerate(row_data):
                     self.table_widget.setItem(row_index, col_index, QTableWidgetItem(str(item)))
+                action_widget = QWidget()
+                action_layout = QHBoxLayout()
+                action_layout.setContentsMargins(0, 0, 0, 0)
+                action_layout.setSpacing(10)
                 update_button = QPushButton('Update')
-                update_button.clicked.connect(lambda checked, row=row_index: self.open_update_dialog(row))
                 delete_button = QPushButton('Delete')
-                delete_button.clicked.connect(lambda checked, row=row_index: self.open_delete_dialog(row))
-                self.table_widget.setCellWidget(row_index, 4, update_button)
-                self.table_widget.setCellWidget(row_index, 5, delete_button)
+                update_button.setFixedWidth(100)
+                delete_button.setFixedWidth(100)
+                action_layout.addWidget(update_button)
+                action_layout.addWidget(delete_button)
+                action_layout.addStretch()
+                action_widget.setLayout(action_layout)
+                update_button.clicked.connect(self.make_update_callback(row_index))
+                delete_button.clicked.connect(self.make_delete_callback(row_index))
+                self.table_widget.setCellWidget(row_index, 4, action_widget)
+
+
+    def make_update_callback(self, row_index):
+        return lambda: self.open_update_dialog(row_index)
+
+    def make_delete_callback(self, row_index):
+        return lambda: self.open_delete_dialog(row_index)
