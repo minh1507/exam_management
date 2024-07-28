@@ -38,3 +38,15 @@
 
 ```
 
+## Design tool
+
+* Required lib: python3-pyqt5 pyqt5-dev-tools qttools5-dev-tools 
+* Open tool
+```bash
+  designer
+```
+
+* Convert UI file to Python file
+```bash
+  pyuic5 -o output.py input.ui
+```
