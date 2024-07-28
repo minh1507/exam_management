@@ -9,6 +9,7 @@ mysql-connector-python = "*"
 sqlalchemy = "*"
 alembic = "*"
 python-dotenv = "*"
+watchdog = "*"
 
 [dev-packages]
 

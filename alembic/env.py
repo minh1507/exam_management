@@ -10,7 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from dotenv import load_dotenv
 load_dotenv()
 
-from src.model.user import Base
+from src.model.subject import Base
 
 # Alembic Config object
 config = context.config

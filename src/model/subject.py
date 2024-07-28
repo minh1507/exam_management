@@ -8,8 +8,8 @@ load_dotenv()
 
 Base = declarative_base()
 
-class User(Base):
-    __tablename__ = 'users'
+class Subject(Base):
+    __tablename__ = 'subjects'
     id = Column(Integer, primary_key=True)
     name = Column(String(50), nullable=False)
     code = Column(String(50), unique=True, nullable=False)

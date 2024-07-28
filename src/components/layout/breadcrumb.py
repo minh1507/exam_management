@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel, QPushButton
+from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 
 class Breadcrumb(QWidget):
@@ -9,23 +9,12 @@ class Breadcrumb(QWidget):
         self.setLayout(self.layout)
         self.breadcrumbs = []
 
-    def add_crumb(self, name, callback=None):
-        # Create a label for the breadcrumb item
+    def add_crumb(self, name):
         crumb = QLabel(name)
-        self.layout.addWidget(crumb)
-
-        if callback:
-            crumb = QPushButton(name)
-            crumb.clicked.connect(callback)
-            self.layout.addWidget(crumb)
-        else:
-            crumb = QLabel(name)
-            self.layout.addWidget(crumb)
-
         self.breadcrumbs.append(crumb)
-        
-        # Add separator if it's not the first breadcrumb
+
         if len(self.breadcrumbs) > 1:
             separator = QLabel(">")
-            self.layout.insertWidget(self.layout.count() - 1, separator)
+            self.layout.addWidget(separator)
 
+        self.layout.addWidget(crumb)
