@@ -1,5 +1,6 @@
 import mysql.connector
 from .base import BaseService
+
 class SubjectService(BaseService):
     table_name = "subjects"
 
@@ -31,6 +32,10 @@ class SubjectService(BaseService):
             cursor.close()
             connection.close()
             return None
+        except mysql.connector.IntegrityError as err:
+            if err.errno == 1062: 
+                return "Duplicate code."
+            return f"Error: {err}"
         except mysql.connector.Error as err:
             return f"Error: {err}"
 
@@ -47,6 +52,10 @@ class SubjectService(BaseService):
             cursor.close()
             connection.close()
             return None
+        except mysql.connector.IntegrityError as err:
+            if err.errno == 1062:  
+                return "Duplicate code."
+            return f"Error: {err}"
         except mysql.connector.Error as err:
             return f"Error: {err}"
 
