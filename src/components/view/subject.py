@@ -156,21 +156,26 @@ class Subject(QWidget):
         else:
             self.data = data
             self.table_widget.setRowCount(len(self.data))
-            self.table_widget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+            
+            header = self.table_widget.horizontalHeader()
+            header.setSectionResizeMode(4, QHeaderView.Stretch)  
+            
             for row_index, row_data in enumerate(self.data):
                 for col_index, item in enumerate(row_data):
-                    self.table_widget.setItem(row_index, col_index, QTableWidgetItem(str(item)))
+                    table_item = QTableWidgetItem(str(item))
+                    table_item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)  
+                    self.table_widget.setItem(row_index, col_index, table_item)
                 action_widget = QWidget()
                 action_layout = QHBoxLayout()
-                action_layout.setContentsMargins(0, 0, 0, 0)
+                action_layout.setContentsMargins(5, 5, 5, 5)
                 action_layout.setSpacing(10)
+                action_layout.setAlignment(Qt.AlignLeft)
                 update_button = QPushButton('Update')
                 delete_button = QPushButton('Delete')
                 update_button.setFixedWidth(100)
                 delete_button.setFixedWidth(100)
                 action_layout.addWidget(update_button)
                 action_layout.addWidget(delete_button)
-                action_layout.addStretch()
                 action_widget.setLayout(action_layout)
                 update_button.clicked.connect(self.make_update_callback(row_index))
                 delete_button.clicked.connect(self.make_delete_callback(row_index))
