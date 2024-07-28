@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel, QScrollArea
 from PyQt5.QtCore import Qt
 
-class Home(QWidget):
+class Permission(QWidget):
     def __init__(self):
         super().__init__()
 
@@ -16,7 +16,7 @@ class Home(QWidget):
         content_layout = QVBoxLayout()
         content_layout.setAlignment(Qt.AlignTop)
 
-        header = QLabel("Home")
+        header = QLabel("Permission")
         header.setStyleSheet("font-size: 24px; padding: 10px;")
 
         content_layout.addWidget(header)

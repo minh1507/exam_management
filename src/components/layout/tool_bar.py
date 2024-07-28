@@ -21,10 +21,9 @@ def tool_bar(self, action):
         """)
 
     toolbar_widget.addAction(action["home"])
+
     category_menu = QMenu("Category")
-    
     category_menu.addAction(action["subject"])
-    
     category_button = QToolButton()
     category_button.setText("Category")
     category_button.setMenu(category_menu)
@@ -34,10 +33,21 @@ def tool_bar(self, action):
             image: none;
         }
     """)
-
     toolbar_widget.addWidget(category_button)
-    
 
+    system_menu = QMenu("System")
+    system_menu.addAction(action["permission"])
+    system_button = QToolButton()
+    system_button.setText("System")
+    system_button.setMenu(system_menu)
+    system_button.setPopupMode(QToolButton.InstantPopup)  
+    system_button.setStyleSheet("""
+        QToolButton::menu-indicator {
+            image: none;
+        }
+    """)
+    toolbar_widget.addWidget(system_button)
+    
     return toolbar_widget
 
     
