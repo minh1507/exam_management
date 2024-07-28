@@ -48,9 +48,9 @@ class UpdateDialog(QDialog):
 
     def init_ui(self):
         layout = QFormLayout(self)
-        self.order_input = QLineEdit(str(self.row_data[1]), self)  # Order
-        self.code_input = QLineEdit(self.row_data[2], self)       # Code
-        self.name_input = QLineEdit(self.row_data[3], self)       # Name
+        self.order_input = QLineEdit(str(self.row_data[1]), self)  
+        self.code_input = QLineEdit(self.row_data[2], self)       
+        self.name_input = QLineEdit(self.row_data[3], self)       
         layout.addRow('Order', self.order_input)
         layout.addRow('Code', self.code_input)
         layout.addRow('Name', self.name_input)
