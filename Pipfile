@@ -8,6 +8,7 @@ pyqt5 = "*"
 mysql-connector-python = "*"
 sqlalchemy = "*"
 alembic = "*"
+python-dotenv = "*"
 
 [dev-packages]
 

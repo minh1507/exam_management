@@ -7,6 +7,9 @@ import sys
 import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
+from dotenv import load_dotenv
+load_dotenv()
+
 from src.model.user import Base
 
 # Alembic Config object
@@ -20,7 +23,7 @@ if config.config_file_name is not None:
 target_metadata = Base.metadata
 
 def run_migrations_offline() -> None:
-    url = config.get_main_option("sqlalchemy.url")
+    url = os.getenv("DATABASE_HOST")
     context.configure(
         url=url,
         target_metadata=target_metadata,
