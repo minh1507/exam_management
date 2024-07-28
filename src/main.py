@@ -13,8 +13,8 @@ class FullScreenWindow(QMainWindow):
     def showHome(self):
         self.stacked_widget.setCurrentWidget(self.home)
 
-    def showView2(self):
-        self.stacked_widget.setCurrentWidget(self.view2)
+    def showSubject(self):
+        self.stacked_widget.setCurrentWidget(self.subject)
 
     def initUI(self):
         self.setWindowTitle('Exam Management')

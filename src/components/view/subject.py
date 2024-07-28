@@ -1,7 +1,7 @@
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QToolBar, QAction, QLabel, QStackedWidget
+from PyQt5.QtWidgets import QWidget, QVBoxLayout, QLabel
 
 
-class View2(QWidget):
+class Subject(QWidget):
     def __init__(self):
         super().__init__()
         layout = QVBoxLayout()

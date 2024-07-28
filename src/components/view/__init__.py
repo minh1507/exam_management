@@ -1,2 +1,2 @@
 from .home import Home
-from .view_2 import View2
+from .subject import Subject
