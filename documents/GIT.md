@@ -1,6 +1,6 @@
 ## Repository
 
-http: https://github.com/minh1507/exam_management.git
+* http: https://github.com/minh1507/exam_management.git
 
 ## Convention
 
