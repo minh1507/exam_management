@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QLabel
-from .base import ScrollableWidget
+from ..base import ScrollableWidget
 class Account(ScrollableWidget):
     def __init__(self):
         super().__init__()

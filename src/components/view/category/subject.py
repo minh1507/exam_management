@@ -14,7 +14,7 @@ from PyQt5.QtWidgets import (
     QHBoxLayout,
     QHeaderView)
 from PyQt5.QtCore import Qt
-from .base import ScrollableWidget
+from ..base import ScrollableWidget
 
 import sys
 import os
@@ -22,7 +22,7 @@ import os
 project_root = os.path.abspath(
     os.path.join(
         os.path.dirname(__file__),
-        "../../../"))
+        "../../../../"))
 sys.path.append(project_root)
 from src.services.subject import SubjectService
 
