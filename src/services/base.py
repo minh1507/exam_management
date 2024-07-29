@@ -3,8 +3,10 @@ import os
 import mysql.connector
 load_dotenv()
 
+
 class BaseService:
     table_name = ''
+
     def __init__(self):
         self.db_config = {
             'host': os.getenv("DB_HOST"),

@@ -10,6 +10,8 @@ sqlalchemy = "*"
 alembic = "*"
 python-dotenv = "*"
 watchdog = "*"
+pylint = "*"
+autopep8 = "*"
 
 [dev-packages]
 

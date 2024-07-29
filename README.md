@@ -57,3 +57,16 @@
 ```bash
   pyuic5 -o output.py input.ui
 ```
+
+## Lint
+
+* Run lint
+```bash
+  pylint src
+```
+
+* Fix lint error
+```bash
+  autopep8 --in-place --aggressive --aggressive -r src/
+```
+

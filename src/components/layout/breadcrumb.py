@@ -1,6 +1,7 @@
 from PyQt5.QtWidgets import QWidget, QHBoxLayout, QLabel
 from PyQt5.QtCore import Qt
 
+
 class Breadcrumb(QWidget):
     def __init__(self, parent=None):
         super().__init__(parent)

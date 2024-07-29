@@ -1,10 +1,15 @@
+"""
+Main server configuration.
+"""
+
 import sys
 import os
 import importlib
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
-from PyQt5.QtCore import Qt, QTimer, pyqtSlot, QObject, QThread, QMetaObject, Q_ARG
+from PyQt5.QtCore import Qt, pyqtSlot, QThread, QMetaObject, Q_ARG
+
 
 class ReloadHandler(FileSystemEventHandler):
     def __init__(self, reload_callback):
@@ -16,11 +21,12 @@ class ReloadHandler(FileSystemEventHandler):
             print(f"{event.src_path} has been modified")
             self.reload_callback(event.src_path)
 
+
 class FullScreenWindow(QMainWindow):
     def __init__(self):
         super().__init__()
         self.initUI()
-    
+
     def showHome(self):
         self.stacked_widget.setCurrentWidget(self.home)
 
@@ -59,13 +65,14 @@ class FullScreenWindow(QMainWindow):
 
         # Body
         body_widget = body(self)
-     
+
         # Tool bar
         tool_bar_widget = tool_bar(self, body_widget["action"])
 
         self.main_layout.addWidget(header_widget)
         self.main_layout.addWidget(tool_bar_widget)
         self.main_layout.addWidget(body_widget["main"])
+
 
 class WatcherThread(QThread):
     def __init__(self, folder_to_watch, reload_callback):
@@ -80,16 +87,24 @@ class WatcherThread(QThread):
         observer.start()
         observer.join()
 
+
 def reload_module(file_path):
-    module_name = os.path.relpath(file_path, './src').replace('/', '.').replace('\\', '.').rstrip('.py')
+    module_name = os.path.relpath(file_path,
+                                  './src').replace('/',
+                                                   '.').replace('\\',
+                                                                '.').rstrip('.py')
     try:
         if module_name in sys.modules:
             importlib.reload(sys.modules[module_name])
         else:
             importlib.import_module(module_name)
-        QMetaObject.invokeMethod(window, "load_ui_components", Qt.QueuedConnection)
+        QMetaObject.invokeMethod(
+            window,
+            "load_ui_components",
+            Qt.QueuedConnection)
     except Exception as e:
         print(f"Failed to reload module: {e}")
+
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
