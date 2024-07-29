@@ -7,8 +7,9 @@ import os
 import importlib
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
-from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog
 from PyQt5.QtCore import Qt, pyqtSlot, QThread, QMetaObject, Q_ARG
+from components.view.login import LoginWindow
 from extends.log import *
 
 class ReloadHandler(FileSystemEventHandler):
@@ -20,6 +21,7 @@ class ReloadHandler(FileSystemEventHandler):
         if event.src_path.endswith(".py"):
             print(f"{event.src_path} has been modified")
             self.reload_callback(event.src_path)
+
 
 
 class FullScreenWindow(QMainWindow):
@@ -111,17 +113,20 @@ def reload_module(file_path):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = FullScreenWindow()
-    window.show()
 
-    if './src' not in sys.path:
-        sys.path.append('./src')
+    login_window = LoginWindow()
+    if login_window.exec_() == QDialog.Accepted:
+        window = FullScreenWindow()
+        window.show()
 
-    watcher_thread = WatcherThread("./src", reload_module)
-    watcher_thread.start()
+        if './src' not in sys.path:
+            sys.path.append('./src')
 
-    try:
-        sys.exit(app.exec_())
-    except KeyboardInterrupt:
-        watcher_thread.terminate()
-        watcher_thread.wait()
+        watcher_thread = WatcherThread("./src", reload_module)
+        watcher_thread.start()
+
+        try:
+            sys.exit(app.exec_())
+        except KeyboardInterrupt:
+            watcher_thread.terminate()
+            watcher_thread.wait()
