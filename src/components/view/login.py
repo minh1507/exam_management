@@ -37,7 +37,7 @@ class LoginWindow(QDialog):
         layout = QVBoxLayout()
 
         logo = QLabel(self)
-        logo.setText("My App Login")
+        logo.setText("Exam management")
         logo.setFont(QFont("Arial", 16, QFont.Bold))
         logo.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo)
