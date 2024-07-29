@@ -8,3 +8,4 @@
 * Fix: <comment> -> Fix bug
 * Hot: <comment> -> Hot fix
 * Doc: <comment> -> Documentation
+* Refactor: <comment> -> Refactor code
