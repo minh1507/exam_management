@@ -13,6 +13,7 @@ load_dotenv()
 from src.model.subject import Base as SubjectBase
 from src.model.role import Base as RoleBase
 from src.model.permission import Base as PermissionBase
+from src.model.account import Base as AccountBase
 
 # Alembic Config object
 config = context.config
@@ -24,7 +25,7 @@ if config.config_file_name is not None:
 # Target metadata for 'autogenerate' support
 target_metadata = MetaData()
 
-for base in [SubjectBase, RoleBase, PermissionBase]:
+for base in [SubjectBase, RoleBase, PermissionBase, AccountBase]:
     for table in base.metadata.sorted_tables:
         target_metadata._add_table(table.name, table.schema, table)
 

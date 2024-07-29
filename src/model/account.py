@@ -1,20 +1,18 @@
-from sqlalchemy import create_engine, Column, Integer, String
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy import create_engine, Column, Integer, String, ForeignKey, Text
 from sqlalchemy.orm import sessionmaker, relationship
 from dotenv import load_dotenv
 import os
 load_dotenv()
 from .base import Base
 
-class Role(Base):
-    __tablename__ = 'roles'
+class Account(Base):
+    __tablename__ = 'accounts'
     id = Column(Integer, primary_key=True)
-    name = Column(String(50), nullable=False)
-    code = Column(String(50), unique=True, nullable=False)
-    order = Column(Integer, nullable=False)
+    username = Column(String(50), unique=True, nullable=False)
+    password = Column(Text, nullable=False)
+    role_id = Column(Integer, ForeignKey('roles.id'), nullable=False)
 
-    permissions = relationship('Permission', back_populates='role')
-    accounts = relationship('Account', back_populates='role')
+    role = relationship('Role', back_populates='accounts')
 
 DATABASE_URL = f"mysql+mysqlconnector://{
     os.getenv("DB_USER")}:{

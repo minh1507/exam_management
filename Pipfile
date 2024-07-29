@@ -13,6 +13,7 @@ watchdog = "*"
 pylint = "*"
 autopep8 = "*"
 colorama = "*"
+hashers = "*"
 
 [dev-packages]
 

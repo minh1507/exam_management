@@ -1,9 +1,21 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy, QFrame
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
+
+import sys
+import os
+
+project_root = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../../../../"))
+sys.path.append(project_root)
+from src.services.login import LoginService
+from src.commons.hashing import HashingUltil
 class LoginWindow(QDialog):
     def __init__(self):
         super().__init__()
+        self.login_service = LoginService()
         self.initUI()
 
     def initUI(self):
@@ -66,12 +78,15 @@ class LoginWindow(QDialog):
 
         self.setLayout(layout)
 
+    def off(self):
+        self.invalid_label.show()
+
     def check_login(self):
-        if (self.username_input.text() == 'admin' and
-                self.password_input.text() == 'password'):
-            self.accept()
+        data, error = self.login_service.fetch_one(self.username_input.text())
+        if data is None:
+            self.off()
         else:
-            self.invalid_label.show()
-            self.username_input.clear()
-            self.password_input.clear()
-            self.username_input.setFocus()
+            if HashingUltil.compare(data[-1], self.password_input.text()) == True:
+                self.accept()
+            else: 
+                self.off()
