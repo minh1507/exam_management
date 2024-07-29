@@ -1,6 +1,4 @@
 from PyQt5.QtWidgets import QToolBar, QMenu, QToolButton
-from PyQt5.QtCore import Qt
-
 
 def tool_bar(self, action):
     toolbar_widget = QToolBar()
@@ -21,8 +19,6 @@ def tool_bar(self, action):
             }
         """)
 
-    toolbar_widget.addAction(action["home"])
-
     category_menu = QMenu("Category")
     category_menu.addAction(action["subject"])
     category_button = QToolButton()
@@ -34,10 +30,10 @@ def tool_bar(self, action):
             image: none;
         }
     """)
-    toolbar_widget.addWidget(category_button)
 
     system_menu = QMenu("System")
     system_menu.addAction(action["permission"])
+    system_menu.addAction(action["account"])
     system_button = QToolButton()
     system_button.setText("System")
     system_button.setMenu(system_menu)
@@ -47,6 +43,9 @@ def tool_bar(self, action):
             image: none;
         }
     """)
+
+    toolbar_widget.addAction(action["home"])
+    toolbar_widget.addWidget(category_button)
     toolbar_widget.addWidget(system_button)
 
     return toolbar_widget
