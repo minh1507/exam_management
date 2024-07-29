@@ -9,7 +9,7 @@ from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout
 from PyQt5.QtCore import Qt, pyqtSlot, QThread, QMetaObject, Q_ARG
-
+from extends.log import *
 
 class ReloadHandler(FileSystemEventHandler):
     def __init__(self, reload_callback):

@@ -12,6 +12,7 @@ python-dotenv = "*"
 watchdog = "*"
 pylint = "*"
 autopep8 = "*"
+colorama = "*"
 
 [dev-packages]
 
