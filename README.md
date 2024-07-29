@@ -9,7 +9,14 @@
 
 * Clone project from github. 
 ```bash
-  pipenv install <repo-name>
+  git clone <repo-name>
+  cd <repo-name>
+  pipenv install
+```
+
+* If version pipfile is missmatch then do this command 
+```bash
+  pipenv lock --clear
 ```
 
 * If you already install dependencies. Run bash below to access virtual enviroment
