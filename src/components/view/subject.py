@@ -124,6 +124,8 @@ class Subject(ScrollableWidget):
             ['Id', 'Order', 'Code', 'Name', 'Action'])
         self.content_layout.addWidget(self.table_widget)
 
+    def showEvent(self, event):
+        super().showEvent(event)
         self.get()
 
     def open_create_dialog(self):
