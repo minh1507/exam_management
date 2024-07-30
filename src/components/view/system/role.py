@@ -52,7 +52,6 @@ class Role(ScrollableWidget):
         if not self.data:
             return
 
-        # Set row count
         num_columns = self.table_widget.columnCount()
         self.table_widget.setRowCount(len(self.data))
 

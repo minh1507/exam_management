@@ -96,5 +96,4 @@ class LoginWindow(QDialog):
             Global.data = jwt.decode(Global.token, "123", algorithms=['HS256'])
             self.on()
             self.accept()  
-
             self.on_login_success()
