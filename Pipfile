@@ -11,6 +11,7 @@ pylint = "*"
 autopep8 = "*"
 colorama = "*"
 requests = "*"
+pyjwt = "*"
 
 [dev-packages]
 

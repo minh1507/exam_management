@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QAction, QStackedWidget
-from ..view import Home, Subject, Permission, Account
+from ..view import Home, Subject, Role, Account
 
 
 def body(self):
@@ -7,23 +7,23 @@ def body(self):
 
     self.home = Home()
     self.subject = Subject()
-    self.permission = Permission()
+    self.role = Role()
     self.account = Account()
 
     self.stacked_widget.addWidget(self.home)
     self.stacked_widget.addWidget(self.subject)
-    self.stacked_widget.addWidget(self.permission)
+    self.stacked_widget.addWidget(self.role)
     self.stacked_widget.addWidget(self.account)
 
     home_action = QAction('Home', self)
     subject_action = QAction('Subject', self)
-    permission_action = QAction('Permission', self)
+    role_action = QAction('Role', self)
     account_action = QAction('Account', self)
 
     # Connect actions to slots
     home_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.home))
     subject_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.subject))
-    permission_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.permission))
+    role_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.role))
     account_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.account))
 
     body = dict()
@@ -31,7 +31,7 @@ def body(self):
     body["action"] = dict()
     body["action"]["home"] = home_action
     body["action"]["subject"] = subject_action
-    body["action"]["permission"] = permission_action
+    body["action"]["role"] = role_action
     body["action"]["account"] = account_action
 
     body["main"] = self.stacked_widget

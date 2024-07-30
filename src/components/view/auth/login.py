@@ -1,7 +1,7 @@
 from PyQt5.QtWidgets import QDialog, QLineEdit, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
-
+import jwt
 import sys
 import os
 
@@ -93,6 +93,7 @@ class LoginWindow(QDialog):
             self.off()
         else:
             Global.token = response["data"]["accessToken"]
+            Global.data = jwt.decode(Global.token, "123", algorithms=['HS256'])
             self.on()
             self.accept()  
 

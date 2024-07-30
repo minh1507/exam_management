@@ -11,6 +11,7 @@ from src.common.static.global_c import Global
 
 def logout(self, login_window):
         Global.token = None
+        Global.data = None
         self.close()
         login_window.show()
 
@@ -46,7 +47,7 @@ def tool_bar(self, action, login_window):
     """)
 
     system_menu = QMenu("System")
-    system_menu.addAction(action["permission"])
+    system_menu.addAction(action["role"])
     system_menu.addAction(action["account"])
     system_button = QToolButton()
     system_button.setText("System")
@@ -69,10 +70,15 @@ def tool_bar(self, action, login_window):
         }
     """)
 
-    toolbar_widget.addAction(action["home"])
-    toolbar_widget.addWidget(category_button)
-    toolbar_widget.addWidget(system_button)
-    toolbar_widget.addWidget(logout_button)
+    #permission
+    role_code = Global.data["data"]["role"]["code"]
+    if role_code == "ADMIN":
+        toolbar_widget.addAction(action["home"])
+        toolbar_widget.addWidget(category_button)
+        toolbar_widget.addWidget(system_button)
+        toolbar_widget.addWidget(logout_button)
+    if role_code == "EXAM_ENTRANTS":
+        toolbar_widget.addWidget(logout_button)
 
     return toolbar_widget
 

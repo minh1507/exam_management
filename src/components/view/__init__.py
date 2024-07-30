@@ -1,4 +1,4 @@
 from .home import Home
 from .category.subject import Subject
-from .system.permission import Permission
+from .system.role import Role
 from .system.account import Account
