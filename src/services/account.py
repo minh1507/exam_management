@@ -12,3 +12,6 @@ class AccountService(BaseService):
             "role": new_data[2]
         })
         return response.json()
+    def delete_account(self, account_id):
+        response = self.delete(self.wrap_url(f"user/{account_id}"))
+        return  response.json()

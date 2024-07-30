@@ -66,6 +66,21 @@ class CreateDialog(QDialog):
             self.password_input.text(),
             self.role_input.currentText()
         ]
+class DeleteDialog(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('Delete Row')
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout(self)
+        label = QLabel('Are you sure you want to delete this row?', self)
+        layout.addWidget(label)
+        button_box = QDialogButtonBox(
+            QDialogButtonBox.Yes | QDialogButtonBox.No, self)
+        button_box.accepted.connect(self.accept)
+        button_box.rejected.connect(self.reject)
+        layout.addWidget(button_box)
 
 class Account(ScrollableWidget):
     breadcrumbs = ["Home", "System", "Account"]
@@ -159,8 +174,11 @@ class Account(ScrollableWidget):
     def open_delete_dialog(self, row):
         dialog = DeleteDialog(self)
         if dialog.exec_() == QDialog.Accepted:
-            error = self.account_service.delete_subject(self.data[row][0])
-            if error:
-                QMessageBox.critical(self, 'Database Error', error)
+            account_id = self.data[row]['id']
+            response = self.account_service.delete_account(account_id)
+            print(response)
+            
+            if response["status"] == 200:  
+                self.get()  
             else:
-                self.get()
+                QMessageBox.critical(self, "Error", "Failed to delete the account.") 
