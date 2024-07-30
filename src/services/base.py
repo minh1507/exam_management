@@ -1,6 +1,11 @@
 import requests
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
 class BaseService(requests.Session):
-    url = "http://localhost:3000/api/"
+    url = os.getenv("BASE_API_URL")
 
     def __init__(self, token=None):
         super().__init__()

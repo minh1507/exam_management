@@ -47,11 +47,11 @@ class CreateDialog(QDialog):
         layout.addWidget(button_box)
 
     def get_data(self):
-        return [
-            self.order_input.text(),
-            self.code_input.text(),
-            self.name_input.text()
-        ]
+        return {
+            'order': self.order_input.text(),
+            'code': self.code_input.text(),
+            'name': self.name_input.text()
+        }
 
 class UpdateDialog(QDialog):
     def __init__(self, row_data, parent=None):
@@ -62,9 +62,9 @@ class UpdateDialog(QDialog):
 
     def init_ui(self):
         layout = QFormLayout(self)
-        self.order_input = QLineEdit(str(self.row_data[1]), self)
-        self.code_input = QLineEdit(self.row_data[2], self)
-        self.name_input = QLineEdit(self.row_data[3], self)
+        self.order_input = QLineEdit(str(self.row_data.get('order', '')), self)
+        self.code_input = QLineEdit(self.row_data.get('code', ''), self)
+        self.name_input = QLineEdit(self.row_data.get('name', ''), self)
         layout.addRow('Order', self.order_input)
         layout.addRow('Code', self.code_input)
         layout.addRow('Name', self.name_input)
@@ -75,12 +75,11 @@ class UpdateDialog(QDialog):
         layout.addWidget(button_box)
 
     def get_data(self):
-        return [
-            self.order_input.text(),
-            self.code_input.text(),
-            self.name_input.text()
-        ]
-
+        return {
+            'order': self.order_input.text(),
+            'code': self.code_input.text(),
+            'name': self.name_input.text()
+        }
 
 class DeleteDialog(QDialog):
     def __init__(self, parent=None):
@@ -132,66 +131,57 @@ class Subject(ScrollableWidget):
         dialog = CreateDialog(self)
         if dialog.exec_() == QDialog.Accepted:
             new_data = dialog.get_data()
-            error = self.subject_service.create_subject(new_data)
-            if error:
-                QMessageBox.critical(self, 'Database Error', error)
-            else:
+            response = self.subject_service.create_subject(new_data)
+            if response['status'] == 201:
                 self.get()
+            else:
+                QMessageBox.critical(self, "Error", response["messages"][0])
 
     def open_update_dialog(self, row):
         dialog = UpdateDialog(self.data[row], self)
         if dialog.exec_() == QDialog.Accepted:
             new_data = dialog.get_data()
-            error = self.subject_service.update_subject(
-                self.data[row][0], new_data)
-            if error:
-                QMessageBox.critical(self, 'Database Error', error)
-            else:
+            response = self.subject_service.update_subject(self.data[row]['id'], new_data)
+            if response['status'] == 200:
                 self.get()
+            else:
+                QMessageBox.critical(self, "Error", response["messages"][0])
 
     def open_delete_dialog(self, row):
         dialog = DeleteDialog(self)
         if dialog.exec_() == QDialog.Accepted:
-            error = self.subject_service.delete_subject(self.data[row][0])
-            if error:
-                QMessageBox.critical(self, 'Database Error', error)
-            else:
+            response = self.subject_service.delete_subject(self.data[row]['id'])
+            if response['status'] == 200:
                 self.get()
+            else:
+                QMessageBox.critical(self, "Error", response["messages"][0])
 
     def get(self):
-        data, error = self.subject_service.fetch_subjects()
-        if error:
-            QMessageBox.critical(self, 'Database Error', error)
-            self.data = []
-        else:
-            self.data = data
-            self.table_widget.setRowCount(len(self.data))
-
-            header = self.table_widget.horizontalHeader()
-            header.setSectionResizeMode(4, QHeaderView.Stretch)
-
-            for row_index, row_data in enumerate(self.data):
-                for col_index, item in enumerate(row_data):
-                    table_item = QTableWidgetItem(str(item))
-                    table_item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
-                    self.table_widget.setItem(row_index, col_index, table_item)
-                action_widget = QWidget()
-                action_layout = QHBoxLayout()
-                action_layout.setContentsMargins(5, 5, 5, 5)
-                action_layout.setSpacing(10)
-                action_layout.setAlignment(Qt.AlignLeft)
-                update_button = QPushButton('Update')
-                delete_button = QPushButton('Delete')
-                update_button.setFixedWidth(100)
-                delete_button.setFixedWidth(100)
-                action_layout.addWidget(update_button)
-                action_layout.addWidget(delete_button)
-                action_widget.setLayout(action_layout)
-                update_button.clicked.connect(
-                    self.make_update_callback(row_index))
-                delete_button.clicked.connect(
-                    self.make_delete_callback(row_index))
-                self.table_widget.setCellWidget(row_index, 4, action_widget)
+        data = self.subject_service.fetch_subjects()
+        self.data = data
+        self.table_widget.setRowCount(len(self.data))
+        header = self.table_widget.horizontalHeader()
+        header.setSectionResizeMode(4, QHeaderView.Stretch)
+        for row_index, row_data in enumerate(self.data):
+            for col_index, key in enumerate(['id', 'order', 'code', 'name']):
+                table_item = QTableWidgetItem(str(row_data[key]))
+                table_item.setTextAlignment(Qt.AlignLeft | Qt.AlignVCenter)
+                self.table_widget.setItem(row_index, col_index, table_item)
+            action_widget = QWidget()
+            action_layout = QHBoxLayout()
+            action_layout.setContentsMargins(5, 5, 5, 5)
+            action_layout.setSpacing(10)
+            action_layout.setAlignment(Qt.AlignLeft)
+            update_button = QPushButton('Update')
+            delete_button = QPushButton('Delete')
+            update_button.setFixedWidth(100)
+            delete_button.setFixedWidth(100)
+            action_layout.addWidget(update_button)
+            action_layout.addWidget(delete_button)
+            action_widget.setLayout(action_layout)
+            update_button.clicked.connect(self.make_update_callback(row_index))
+            delete_button.clicked.connect(self.make_delete_callback(row_index))
+            self.table_widget.setCellWidget(row_index, 4, action_widget)
 
     def make_update_callback(self, row_index):
         return lambda: self.open_update_dialog(row_index)
