@@ -3,7 +3,7 @@ import json
 
 class LoginService(BaseService):
     def login(self, username, password):
-        response = self.post("http://localhost:3000/api/auth/login/", json={
+        response = self.post(self.wrap_url('auth/login/'), json={
             "username": username,
             "password": password
         })
