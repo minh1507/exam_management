@@ -5,15 +5,12 @@ name = "pypi"
 
 [packages]
 pyqt5 = "*"
-mysql-connector-python = "*"
-sqlalchemy = "*"
-alembic = "*"
 python-dotenv = "*"
 watchdog = "*"
 pylint = "*"
 autopep8 = "*"
 colorama = "*"
-hashers = "*"
+requests = "*"
 
 [dev-packages]
 

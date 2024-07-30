@@ -11,7 +11,6 @@ project_root = os.path.abspath(
         "../../../../"))
 sys.path.append(project_root)
 from src.services.login import LoginService
-from src.commons.hashing import HashingUltil
 class LoginWindow(QDialog):
     def __init__(self):
         super().__init__()
@@ -82,11 +81,6 @@ class LoginWindow(QDialog):
         self.invalid_label.show()
 
     def check_login(self):
-        data, error = self.login_service.fetch_one(self.username_input.text())
-        if data is None:
-            self.off()
-        else:
-            if HashingUltil.compare(data[-1], self.password_input.text()) == True:
-                self.accept()
-            else: 
-                self.off()
+        self.accept()
+
+        # self.off()

@@ -1,26 +1,13 @@
-from dotenv import load_dotenv
-import os
-import mysql.connector
-load_dotenv()
+import requests
+class BaseService(requests.Session):
+    def __init__(self, token=None):
+        super().__init__()
+        self.token = token
 
-
-class BaseService:
-    table_name = ''
-
-    def __init__(self):
-        self.db_config = {
-            'host': os.getenv("DB_HOST"),
-            'user': os.getenv("DB_USER"),
-            'port': os.getenv("DB_PORT"),
-            'password': os.getenv("DB_PASSWORD"),
-            'database': os.getenv("DB_NAME"),
-            'collation': os.getenv("DB_COLLATION"),
-        }
-
-    def get_database_connection(self):
-        try:
-            connection = mysql.connector.connect(**self.db_config)
-            return connection
-        except mysql.connector.Error as err:
-            print(f"Error: {err}")
-            return None
+    def request(self, method, url, **kwargs):
+        if self.token is not None:
+            if 'headers' not in kwargs:
+                kwargs['headers'] = {}
+            kwargs['headers']['Authorization'] = f'Bearer {self.token}'
+        return super().request(method, url, **kwargs)
+    

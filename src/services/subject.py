@@ -1,23 +1,11 @@
-import mysql.connector
 from .base import BaseService
 
 class SubjectService(BaseService):
     table_name = "subjects"
 
     def fetch_subjects(self):
-        connection = self.get_database_connection()
-        if not connection:
-            return None, "Database connection not available."
-
         try:
-            cursor = connection.cursor()
-            cursor.execute(
-                f"SELECT `id`, `order`, `code`, `name` FROM {
-                    self.table_name} ORDER BY `order` ASC")
-            data = cursor.fetchall()
-            cursor.close()
-            connection.close()
-            return data, None
+            return [], None
         except mysql.connector.Error as err:
             return None, f"Error: {err}"
 
