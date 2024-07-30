@@ -142,15 +142,10 @@ class Account(ScrollableWidget):
             action_layout.setContentsMargins(5, 5, 5, 5)
             action_layout.setSpacing(10)
             action_layout.setAlignment(Qt.AlignLeft)
-            update_button = QPushButton('Update')
             delete_button = QPushButton('Delete')
-            update_button.setFixedWidth(100)
             delete_button.setFixedWidth(100)
-            action_layout.addWidget(update_button)
             action_layout.addWidget(delete_button)
             action_widget.setLayout(action_layout)
-            update_button.clicked.connect(
-                self.make_update_callback(row_index))
             delete_button.clicked.connect(
                 self.make_delete_callback(row_index))
             self.table_widget.setCellWidget(row_index, 3, action_widget)
@@ -160,17 +155,6 @@ class Account(ScrollableWidget):
 
     def make_delete_callback(self, row_index):
         return lambda: self.open_delete_dialog(row_index)
-
-    def open_update_dialog(self, row):
-        dialog = UpdateDialog(self.data[row], self)
-        if dialog.exec_() == QDialog.Accepted:
-            new_data = dialog.get_data()
-            error = self.account_service.update_subject(
-                self.data[row][0], new_data)
-            if error:
-                QMessageBox.critical(self, 'Database Error', error)
-            else:
-                self.get()
 
     def open_delete_dialog(self, row):
         dialog = DeleteDialog(self)
