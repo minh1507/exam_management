@@ -1,14 +1,10 @@
-"""
-Main server configuration.
-"""
-
 import sys
 import os
 import importlib
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDialog
-from PyQt5.QtCore import Qt, pyqtSlot, QThread, QMetaObject, Q_ARG
+from PyQt5.QtCore import Qt, QThread, QMetaObject, pyqtSlot
 from components.view.auth.login import LoginWindow
 from extends.log import *
 
@@ -21,63 +17,6 @@ class ReloadHandler(FileSystemEventHandler):
         if event.src_path.endswith(".py"):
             print(f"{event.src_path} has been modified")
             self.reload_callback(event.src_path)
-
-
-
-class FullScreenWindow(QMainWindow):
-    def __init__(self):
-        super().__init__()
-        self.initUI()
-
-    def showHome(self):
-        self.stacked_widget.setCurrentWidget(self.home)
-
-    def showSubject(self):
-        self.stacked_widget.setCurrentWidget(self.subject)
-
-    def showPermission(self):
-        self.stacked_widget.setCurrentWidget(self.permission)
-
-    def showAccount(self):
-        self.stacked_widget.setCurrentWidget(self.account)
-
-    def initUI(self):
-        self.setWindowTitle('Exam Management')
-        self.showFullScreen()
-
-        central_widget = QWidget()
-        self.setCentralWidget(central_widget)
-        self.main_layout = QVBoxLayout(central_widget)
-        self.main_layout.setAlignment(Qt.AlignTop)
-        self.main_layout.setContentsMargins(0, 0, 0, 0)
-        self.main_layout.setSpacing(0)
-
-        self.load_ui_components()
-
-    @pyqtSlot()
-    def load_ui_components(self):
-        from components.layout.header import header
-        from components.layout.tool_bar import tool_bar
-        from components.layout.body import body
-
-        for i in reversed(range(self.main_layout.count())):
-            widget = self.main_layout.itemAt(i).widget()
-            if widget is not None:
-                widget.setParent(None)
-
-        # Header
-        header_widget = header(self)
-
-        # Body
-        body_widget = body(self)
-
-        # Tool bar
-        tool_bar_widget = tool_bar(self, body_widget["action"])
-
-        self.main_layout.addWidget(header_widget)
-        self.main_layout.addWidget(tool_bar_widget)
-        self.main_layout.addWidget(body_widget["main"])
-
 
 class WatcherThread(QThread):
     def __init__(self, folder_to_watch, reload_callback):
@@ -92,41 +31,94 @@ class WatcherThread(QThread):
         observer.start()
         observer.join()
 
-
 def reload_module(file_path):
-    module_name = os.path.relpath(file_path,
-                                  './src').replace('/',
-                                                   '.').replace('\\',
-                                                                '.').rstrip('.py')
+    module_name = os.path.relpath(file_path, './src').replace('/', '.').replace('\\', '.').rstrip('.py')
     try:
         if module_name in sys.modules:
             importlib.reload(sys.modules[module_name])
         else:
             importlib.import_module(module_name)
-        QMetaObject.invokeMethod(
-            window,
-            "load_ui_components",
-            Qt.QueuedConnection)
+        QMetaObject.invokeMethod(window, "load_ui_components", Qt.QueuedConnection)
     except Exception as e:
         print(f"Failed to reload module: {e}")
 
+def show_full_screen_window(login_window):
+    class FullScreenWindow(QMainWindow):
+        def __init__(self, login_window):
+            super().__init__()
+            if not isinstance(login_window, QDialog):
+                raise TypeError("login_window must be a QDialog instance")
+            self.login_window = login_window
+            self.initUI()
 
-if __name__ == '__main__':
+        def initUI(self):
+            self.setWindowTitle('Exam Management')
+            self.showFullScreen()
+            central_widget = QWidget()
+            self.setCentralWidget(central_widget)
+            self.main_layout = QVBoxLayout(central_widget)
+            self.main_layout.setAlignment(Qt.AlignTop)
+            self.main_layout.setContentsMargins(0, 0, 0, 0)
+            self.main_layout.setSpacing(0)
+
+            self.load_ui_components()
+
+        @pyqtSlot()
+        def load_ui_components(self):
+            from components.layout.header import header
+            from components.layout.tool_bar import tool_bar
+            from components.layout.body import body
+
+            for i in reversed(range(self.main_layout.count())):
+                widget = self.main_layout.itemAt(i).widget()
+                if widget is not None:
+                    widget.setParent(None)
+
+            header_widget = header(self)
+            body_widget = body(self)
+            tool_bar_widget = tool_bar(self, body_widget["action"], self.login_window)
+
+            self.main_layout.addWidget(header_widget)
+            self.main_layout.addWidget(tool_bar_widget)
+            self.main_layout.addWidget(body_widget["main"])
+
+    global window
+    window = FullScreenWindow(login_window)
+    window.show()
+
+def main():
     app = QApplication(sys.argv)
 
-    login_window = LoginWindow()
-    if login_window.exec_() == QDialog.Accepted:
-        window = FullScreenWindow()
-        window.show()
-
-        if './src' not in sys.path:
-            sys.path.append('./src')
-
-        watcher_thread = WatcherThread("./src", reload_module)
-        watcher_thread.start()
-
+    while True:
         try:
-            sys.exit(app.exec_())
-        except KeyboardInterrupt:
-            watcher_thread.terminate()
-            watcher_thread.wait()
+            login_window = LoginWindow(on_login_success=lambda: show_full_screen_window(login_window))
+            login_window.show()
+
+            result = login_window.exec_()
+
+            if result == QDialog.Accepted:
+                if './src' not in sys.path:
+                    sys.path.append('./src')
+
+                watcher_thread = WatcherThread("./src", reload_module)
+                watcher_thread.start()
+
+                try:
+                    print("Entering application event loop...")
+                    app.exec_()
+                    print("Exited application event loop.")
+                except Exception as e:
+                    print(f"Exception during application event loop: {e}")
+                finally:
+                    watcher_thread.terminate()
+                    watcher_thread.wait()
+                break
+            else:
+                print("Login failed or dialog was canceled.")
+                break
+        except Exception as e:
+            print(f"Unhandled exception: {e}")
+            break
+
+if __name__ == '__main__':
+    main()

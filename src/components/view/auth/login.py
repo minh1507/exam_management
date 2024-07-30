@@ -1,4 +1,4 @@
-from PyQt5.QtWidgets import QDialog, QLineEdit, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy, QFrame
+from PyQt5.QtWidgets import QDialog, QLineEdit, QPushButton, QVBoxLayout, QLabel, QHBoxLayout, QSpacerItem, QSizePolicy
 from PyQt5.QtGui import QFont
 from PyQt5.QtCore import Qt
 
@@ -11,10 +11,13 @@ project_root = os.path.abspath(
         "../../../../"))
 sys.path.append(project_root)
 from src.services.login import LoginService
+from src.common.static.global_c import Global
+
 class LoginWindow(QDialog):
-    def __init__(self):
+    def __init__(self, on_login_success):
         super().__init__()
         self.login_service = LoginService()
+        self.on_login_success = on_login_success
         self.initUI()
 
     def initUI(self):
@@ -64,7 +67,7 @@ class LoginWindow(QDialog):
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password_input)
 
-        self.invalid_label = QLabel("Invalid credentials", self)
+        self.invalid_label = QLabel("", self)
         self.invalid_label.setStyleSheet("color: red;")
         self.invalid_label.hide()
         layout.addWidget(self.invalid_label)
@@ -72,15 +75,25 @@ class LoginWindow(QDialog):
         self.login_button = QPushButton('Login', self)
         self.login_button.clicked.connect(self.check_login)
         layout.addWidget(self.login_button)
-
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         self.setLayout(layout)
 
     def off(self):
         self.invalid_label.show()
+    
+    def on(self):
+        self.invalid_label.hide()
 
     def check_login(self):
-        self.accept()
+        response = self.login_service.login(self.username_input.text(), self.password_input.text())
 
-        # self.off()
+        if(response["status"] == 400):
+            self.invalid_label.setText(response["messages"][0])
+            self.off()
+        else:
+            Global.token = response["data"]["accessToken"]
+            self.on()
+            self.accept()  
+
+            self.on_login_success()

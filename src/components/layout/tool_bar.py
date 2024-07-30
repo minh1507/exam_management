@@ -1,6 +1,20 @@
-from PyQt5.QtWidgets import QToolBar, QMenu, QToolButton
+from PyQt5.QtWidgets import QToolBar, QMenu, QToolButton, QAction
+import sys
+import os
 
-def tool_bar(self, action):
+project_root = os.path.abspath(
+    os.path.join(
+        os.path.dirname(__file__),
+        "../../../"))
+sys.path.append(project_root)
+from src.common.static.global_c import Global
+
+def logout(self, login_window):
+        Global.token = None
+        self.close()
+        login_window.show()
+
+def tool_bar(self, action, login_window):
     toolbar_widget = QToolBar()
 
     toolbar_widget.setStyleSheet("""
@@ -44,8 +58,22 @@ def tool_bar(self, action):
         }
     """)
 
+    logout_action = QAction("Logout", self)
+    logout_action.triggered.connect(lambda: logout(self, login_window))
+    logout_button = QToolButton()
+    logout_button.setText("Logout")
+    logout_button.setDefaultAction(logout_action)
+    logout_button.setStyleSheet("""
+        QToolButton::menu-indicator {
+            image: none;
+        }
+    """)
+
     toolbar_widget.addAction(action["home"])
     toolbar_widget.addWidget(category_button)
     toolbar_widget.addWidget(system_button)
+    toolbar_widget.addWidget(logout_button)
 
     return toolbar_widget
+
+

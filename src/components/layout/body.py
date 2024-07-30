@@ -15,24 +15,24 @@ def body(self):
     self.stacked_widget.addWidget(self.permission)
     self.stacked_widget.addWidget(self.account)
 
-    home = QAction('Home', self)
-    subject = QAction('Subject', self)
-    permission = QAction('Permission', self)
-    account = QAction('Account', self)
+    home_action = QAction('Home', self)
+    subject_action = QAction('Subject', self)
+    permission_action = QAction('Permission', self)
+    account_action = QAction('Account', self)
 
-    home.triggered.connect(self.showHome)
-    subject.triggered.connect(self.showSubject)
-    permission.triggered.connect(self.showPermission)
-    account.triggered.connect(self.showAccount)
+    # Connect actions to slots
+    home_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.home))
+    subject_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.subject))
+    permission_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.permission))
+    account_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.account))
 
     body = dict()
 
-    # action
     body["action"] = dict()
-    body["action"]["home"] = home
-    body["action"]["subject"] = subject
-    body["action"]["permission"] = permission
-    body["action"]["account"] = account
+    body["action"]["home"] = home_action
+    body["action"]["subject"] = subject_action
+    body["action"]["permission"] = permission_action
+    body["action"]["account"] = account_action
 
     body["main"] = self.stacked_widget
     return body
