@@ -1,13 +1,8 @@
 from PyQt5.QtWidgets import (
-    QWidget,
-    QTableWidgetItem,
-    QTableWidget,
+    QLabel,
+    QVBoxLayout,
     QFrame,
-    QPushButton,
-    QMessageBox,
-    QHBoxLayout,
-    )
-from PyQt5.QtCore import Qt
+)
 from ..base import ScrollableWidget
 
 import sys
@@ -35,11 +30,10 @@ class Role(ScrollableWidget):
         line.setFrameShadow(QFrame.Sunken)
         self.content_layout.addWidget(line)
 
-        self.table_widget = QTableWidget()
-        self.table_widget.setColumnCount(3)
-        self.table_widget.setHorizontalHeaderLabels(['Id', 'Name', 'Code'])
-        self.content_layout.addWidget(self.table_widget)
-
+        self.cards_layout = QVBoxLayout()
+        self.cards_layout.setContentsMargins(0, 0, 0, 0)  
+        self.cards_layout.setSpacing(10)  
+        self.content_layout.addLayout(self.cards_layout)
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -52,14 +46,45 @@ class Role(ScrollableWidget):
         if not self.data:
             return
 
-        num_columns = self.table_widget.columnCount()
-        self.table_widget.setRowCount(len(self.data))
+        self.clear_cards()
 
-        for row_index, row_data in enumerate(self.data):
-            self.table_widget.setItem(row_index, 0, QTableWidgetItem(row_data['id']))
-            self.table_widget.setItem(row_index, 1, QTableWidgetItem(row_data['name']))
-            self.table_widget.setItem(row_index, 2, QTableWidgetItem(row_data['code']))
+        for role in self.data:
+            self.create_card(role)
 
+    def clear_cards(self):
+        for i in reversed(range(self.cards_layout.count())):
+            widget = self.cards_layout.itemAt(i).widget()
+            if widget is not None:
+                widget.deleteLater()
 
+    def create_card(self, role):
+        card = QFrame()
+        card.setFrameShape(QFrame.NoFrame)
+        card.setStyleSheet("""
+            background-color: white;
+            border-radius: 10px;
+            padding: 10px;
+        """)
 
-            
+        card_layout = QVBoxLayout()
+        card_layout.setContentsMargins(0, 0, 0, 0)  
+        card_layout.setSpacing(5) 
+        name_label = QLabel(f"{role['name']}")
+        name_label.setStyleSheet("""
+            font-size: 18px;
+            font-weight: bold;
+            color: #333;
+            margin-bottom: 5px;
+        """)
+        card_layout.addWidget(name_label)
+
+        code_label = QLabel(f"Code: {role['code']}")
+        code_label.setStyleSheet("""
+            font-size: 14px;
+            color: #555;
+        """)
+
+        card_layout.addWidget(code_label)
+
+        card.setLayout(card_layout)
+        self.cards_layout.addWidget(card)
