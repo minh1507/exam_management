@@ -12,16 +12,18 @@ project_root = os.path.abspath(
 sys.path.append(project_root)
 from src.services.login import LoginService
 from src.common.static.global_c import Global
+from src.common.i18n.lang import Trans
 
 class LoginWindow(QDialog):
     def __init__(self, on_login_success):
         super().__init__()
         self.login_service = LoginService()
         self.on_login_success = on_login_success
+        self.trans = Trans()
         self.initUI()
 
     def initUI(self):
-        self.setWindowTitle('Login')
+        self.setWindowTitle(self.trans.objectT("login"))
         self.setFixedSize(400, 200)
         self.setStyleSheet("""
             QDialog {
@@ -51,7 +53,7 @@ class LoginWindow(QDialog):
         layout = QVBoxLayout()
 
         logo = QLabel(self)
-        logo.setText("Exam management")
+        logo.setText(self.trans.objectT("exam_management"))
         logo.setFont(QFont("Arial", 16, QFont.Bold))
         logo.setAlignment(Qt.AlignCenter)
         layout.addWidget(logo)
@@ -59,11 +61,11 @@ class LoginWindow(QDialog):
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
 
         self.username_input = QLineEdit(self)
-        self.username_input.setPlaceholderText('Username')
+        self.username_input.setPlaceholderText(self.trans.objectT("username"))
         layout.addWidget(self.username_input)
 
         self.password_input = QLineEdit(self)
-        self.password_input.setPlaceholderText('Password')
+        self.password_input.setPlaceholderText(self.trans.objectT("password"))
         self.password_input.setEchoMode(QLineEdit.Password)
         layout.addWidget(self.password_input)
 
@@ -72,7 +74,7 @@ class LoginWindow(QDialog):
         self.invalid_label.hide()
         layout.addWidget(self.invalid_label)
 
-        self.login_button = QPushButton('Login', self)
+        self.login_button = QPushButton(self.trans.objectT("login"), self)
         self.login_button.clicked.connect(self.check_login)
         layout.addWidget(self.login_button)
         layout.addSpacerItem(QSpacerItem(20, 40, QSizePolicy.Minimum, QSizePolicy.Expanding))
@@ -89,7 +91,7 @@ class LoginWindow(QDialog):
         response = self.login_service.login(self.username_input.text(), self.password_input.text())
 
         if(response["status"] == 400):
-            self.invalid_label.setText(response["messages"][0])
+            self.invalid_label.setText(self.trans.message(response["messages"][0]))
             self.off()
         else:
             Global.token = response["data"]["accessToken"]

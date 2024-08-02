@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QVBoxLayout, QDi
 from PyQt5.QtCore import Qt, QThread, QMetaObject, pyqtSlot
 from components.view.auth.login import LoginWindow
 from extends.log import *
-
+from common.i18n.lang import Trans
 class ReloadHandler(FileSystemEventHandler):
     def __init__(self, reload_callback):
         super().__init__()
@@ -49,10 +49,11 @@ def show_full_screen_window(login_window):
             if not isinstance(login_window, QDialog):
                 raise TypeError("login_window must be a QDialog instance")
             self.login_window = login_window
+            self.trans = Trans()
             self.initUI()
 
         def initUI(self):
-            self.setWindowTitle('Exam Management')
+            self.setWindowTitle(self.trans.objectT("exam_management"))
             self.showFullScreen()
             central_widget = QWidget()
             self.setCentralWidget(central_widget)

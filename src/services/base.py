@@ -9,7 +9,6 @@ class BaseService(requests.Session):
 
     def __init__(self):
         super().__init__()
-        print(Global.token)
         self.token = Global.token
 
     def request(self, method, url, **kwargs):

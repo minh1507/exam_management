@@ -1,0 +1,13 @@
+{
+    "object": {
+        "login": "đăng nhập",
+        "username": "tài khoản",
+        "password": "mật khẩu",
+        "exam_management": "quản lý đề thi"
+    },
+    "message": {
+        "required": "không được để trống",
+        "not_existed": "không tồn tại",
+        "wrong": "không đúng"
+    }
+}

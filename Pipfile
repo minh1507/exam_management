@@ -13,6 +13,7 @@ colorama = "*"
 requests = "*"
 pyjwt = "*"
 matplotlib = "*"
+pyi18n-v2 = "*"
 
 [dev-packages]
 
