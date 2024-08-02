@@ -1,0 +1,33 @@
+{
+    "object": {
+        "login": "login",
+        "username": "username",
+        "password": "password",
+        "exam_management": "exam management",
+        "category": "category",
+        "system": "system",
+        "logout": "logout",
+        "home": "home",
+        "subject": "subject",
+        "role": "role",
+        "account": "account",
+        "preference": "preference",
+        "setting": "setting"
+    },
+    "message": {
+        "required": "required",
+        "not_existed": "not_existed",
+        "wrong": "wrong",
+        "invalid_password": "must at least 8 character, 1 uppercase, 1 lower case, 1 number and 1 symbol",
+        "invalid_username": "must at least 6 character",
+        "invalid": "is invalid"
+    },
+    "action": {
+        "submit": "submit",
+        "cancel": "cancel"
+    },
+    "button": {
+        "create": "create",
+        "delete": "delete"
+    }
+}

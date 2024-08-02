@@ -33,11 +33,20 @@ def tool_bar(self, action, login_window):
                 background-color: #cccccc !important;
             }
         """)
+    
+    home_button = QToolButton()
+    home_button.setDefaultAction(action["home"])
+    home_button.setText(self.app.trans.objectT("home"))
+    home_button.setStyleSheet("""
+        QToolButton::menu-indicator {
+            image: none;
+        }
+    """)
 
     category_menu = QMenu("Category")
     category_menu.addAction(action["subject"])
     category_button = QToolButton()
-    category_button.setText("Category")
+    category_button.setText(self.app.trans.objectT("category"))
     category_button.setMenu(category_menu)
     category_button.setPopupMode(QToolButton.InstantPopup)
     category_button.setStyleSheet("""
@@ -50,7 +59,7 @@ def tool_bar(self, action, login_window):
     system_menu.addAction(action["role"])
     system_menu.addAction(action["account"])
     system_button = QToolButton()
-    system_button.setText("System")
+    system_button.setText(self.app.trans.objectT("system"))
     system_button.setMenu(system_menu)
     system_button.setPopupMode(QToolButton.InstantPopup)
     system_button.setStyleSheet("""
@@ -59,25 +68,37 @@ def tool_bar(self, action, login_window):
         }
     """)
 
+    preference_menu = QMenu("Setting")
+    preference_menu.addAction(action["preference"])
+    preference_button = QToolButton()
+    preference_button.setText(self.app.trans.objectT("setting"))
+    preference_button.setMenu(preference_menu)
+    preference_button.setPopupMode(QToolButton.InstantPopup)
+    preference_button.setStyleSheet("""
+        QToolButton::menu-indicator {
+            image: none;
+        }
+    """)
+
     logout_action = QAction("Logout", self)
     logout_action.triggered.connect(lambda: logout(self, login_window))
     logout_button = QToolButton()
-    logout_button.setText("Logout")
     logout_button.setDefaultAction(logout_action)
+    logout_button.setText(self.app.trans.objectT("logout"))
     logout_button.setStyleSheet("""
         QToolButton::menu-indicator {
             image: none;
         }
     """)
 
-    #permission
     role_code = Global.data["data"]["role"]["code"]
     if role_code == "ADMIN":
-        toolbar_widget.addAction(action["home"])
+        toolbar_widget.addWidget(home_button)
         toolbar_widget.addWidget(category_button)
         toolbar_widget.addWidget(system_button)
+        toolbar_widget.addWidget(preference_button)
         toolbar_widget.addWidget(logout_button)
-    if role_code == "EXAM_ENTRANTS":
+    elif role_code == "EXAM_ENTRANTS":
         toolbar_widget.addWidget(logout_button)
 
     return toolbar_widget

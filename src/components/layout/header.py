@@ -14,7 +14,7 @@ def header(self):
     """)
     header_widget.setFixedHeight(50)
 
-    title_label = QLabel(self.trans.objectT("exam_management"), self)
+    title_label = QLabel(self.app.trans.objectT("exam_management"), self)
     title_label.setStyleSheet("""
         color: white;
     """)

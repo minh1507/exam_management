@@ -3,7 +3,7 @@ import os
 
 class Trans:
     def __init__(self):
-        self.language = 'vi'
+        self.language = 'en'
         self.load_path = 'src/locales/'
         self.translations = self.load_translations()
 
@@ -22,6 +22,12 @@ class Trans:
     
     def objectT(self, text):
         return self.firstLetterUppercase(self.get_translation(f"object.{text}"))
+    
+    def actionT(self, text):
+        return self.firstLetterUppercase(self.get_translation(f"action.{text}"))
+    
+    def buttonT(self, text):
+        return self.firstLetterUppercase(self.get_translation(f"button.{text}"))
     
     def MessageT(self, text):
         return self.get_translation(f"message.{text}")

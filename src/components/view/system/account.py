@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QFrame,
     QPushButton,
     QDialog,
-    QDialogButtonBox,
     QLineEdit,
     QFormLayout,
     QMessageBox,
@@ -24,12 +23,14 @@ project_root = os.path.abspath(
 sys.path.append(project_root)
 from src.services.account import AccountService
 from src.services.role import RoleService
+from src.common.i18n.lang import Trans
 
 class CreateDialog(QDialog):
     def __init__(self, roles, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Create Account')
         self.roles = roles
+        self.parent = parent
         self.init_ui()
 
     def init_ui(self):
@@ -39,13 +40,13 @@ class CreateDialog(QDialog):
         form_layout.setLabelAlignment(Qt.AlignRight)
 
         self.username_input = QLineEdit(self)
-        self.username_input.setPlaceholderText('Enter username')
+        self.username_input.setPlaceholderText(self.parent.trans.objectT("username"))
         self.username_input.setStyleSheet("padding: 10px; border: 1px solid #ddd; border-radius: 5px;")
         form_layout.addRow(QLabel('Username'), self.username_input)
 
         self.password_input = QLineEdit(self)
         self.password_input.setEchoMode(QLineEdit.Password)
-        self.password_input.setPlaceholderText('Enter password')
+        self.password_input.setPlaceholderText(self.parent.trans.objectT("password"))
         self.password_input.setStyleSheet("padding: 10px; border: 1px solid #ddd; border-radius: 5px;")
         form_layout.addRow(QLabel('Password'), self.password_input)
 
@@ -60,7 +61,7 @@ class CreateDialog(QDialog):
         self.error_label.setVisible(False)
         form_layout.addRow(self.error_label)
 
-        submit_button = QPushButton('Submit', self)
+        submit_button = QPushButton(self.parent.trans.actionT("submit"), self)
         submit_button.setStyleSheet("""
             QPushButton {
                 background-color: #007bff;
@@ -79,7 +80,7 @@ class CreateDialog(QDialog):
         """)
         submit_button.clicked.connect(self.accept)
 
-        cancel_button = QPushButton('Cancel', self)
+        cancel_button = QPushButton(self.parent.trans.actionT("cancel"), self)
         cancel_button.setStyleSheet("""
             QPushButton {
                 background-color: #ff6f61;
@@ -192,6 +193,7 @@ class Account(ScrollableWidget):
         self.account_service = AccountService()
         self.data = []
         self.roles = RoleService()
+        self.trans = Trans()
         self.init_ui()
 
     def init_ui(self):
@@ -200,7 +202,7 @@ class Account(ScrollableWidget):
         line.setFrameShadow(QFrame.Sunken)
         self.content_layout.addWidget(line)
 
-        create_button = QPushButton('Create')
+        create_button = QPushButton(self.trans.buttonT("create"))
         create_button.setFixedSize(100, 30)  
         create_button.setStyleSheet("""
             QPushButton {
@@ -245,7 +247,7 @@ class Account(ScrollableWidget):
 
                 response = self.account_service.create_account(new_data)
                 if response.get("status") == 400:
-                    dialog.set_error("Error creating account. Please check the provided information.")
+                    dialog.set_error(self.trans.message(response["messages"][0]))
                     continue  
                 else:
                     self.get()
@@ -313,7 +315,7 @@ class Account(ScrollableWidget):
         action_layout.setSpacing(10)
         action_layout.setAlignment(Qt.AlignLeft)
 
-        delete_button = QPushButton('Delete')
+        delete_button = QPushButton(self.trans.buttonT("delete"))
         delete_button.setFixedWidth(100)
         delete_button.setStyleSheet("""
             QPushButton {

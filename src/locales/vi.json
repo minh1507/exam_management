@@ -3,7 +3,14 @@
         "login": "đăng nhập",
         "username": "tài khoản",
         "password": "mật khẩu",
-        "exam_management": "quản lý đề thi"
+        "exam_management": "quản lý đề thi",
+        "category": "danh mục",
+        "system": "hệ thống",
+        "logout": "đăng xuất",
+        "home": "Trang chủ",
+        "subject": "Môn học",
+        "role": "vai trò",
+        "account": "tài khoản"
     },
     "message": {
         "required": "không được để trống",
