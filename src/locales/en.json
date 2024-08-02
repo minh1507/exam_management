@@ -12,7 +12,10 @@
         "role": "role",
         "account": "account",
         "preference": "preference",
-        "setting": "setting"
+        "setting": "setting",
+        "order": "order",
+        "name": "name",
+        "code": "code"
     },
     "message": {
         "required": "required",

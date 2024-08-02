@@ -15,7 +15,7 @@ from PyQt5.QtCore import Qt
 import sys
 import os
 from ..base import ScrollableWidget
-
+from PyQt5.QtGui import QIcon
 project_root = os.path.abspath(
     os.path.join(
         os.path.dirname(__file__),
@@ -29,6 +29,7 @@ class CreateDialog(QDialog):
     def __init__(self, roles, parent=None):
         super().__init__(parent)
         self.setWindowTitle('Create Account')
+        self.setWindowIcon(QIcon("src/assets/icon/create.png"))
         self.roles = roles
         self.parent = parent
         self.init_ui()
@@ -125,7 +126,8 @@ class CreateDialog(QDialog):
 class DeleteDialog(QDialog):
     def __init__(self, parent=None):
         super().__init__(parent)
-        self.setWindowTitle('Delete Row')
+        self.setWindowTitle('Delete account')
+        self.setWindowIcon(QIcon("src/assets/icon/delete.png"))
         self.init_ui()
 
     def init_ui(self):
