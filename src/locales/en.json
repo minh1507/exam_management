@@ -15,7 +15,10 @@
         "setting": "setting",
         "order": "order",
         "name": "name",
-        "code": "code"
+        "code": "code",
+        "corrector": "corrector",
+        "question": "question",
+        "refresh": "refresh"
     },
     "message": {
         "required": "required",

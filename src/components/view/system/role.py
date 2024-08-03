@@ -78,13 +78,5 @@ class Role(ScrollableWidget):
         """)
         card_layout.addWidget(name_label)
 
-        code_label = QLabel(f"Code: {role['code']}")
-        code_label.setStyleSheet("""
-            font-size: 14px;
-            color: #555;
-        """)
-
-        card_layout.addWidget(code_label)
-
         card.setLayout(card_layout)
         self.cards_layout.addWidget(card)

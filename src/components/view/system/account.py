@@ -297,8 +297,6 @@ class Account(ScrollableWidget):
         lastname_label.setStyleSheet("""
             font-size: 14px;
             color: #555;
-            margin-bottom: 0 !important;    
-            padding-bottom: 0 !important;    
         """)
 
         role_label = QLabel(f"Role: {account['role']['name']}")

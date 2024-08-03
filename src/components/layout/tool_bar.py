@@ -55,6 +55,18 @@ def tool_bar(self, action, login_window):
         }
     """)
 
+    corrector_menu = QMenu("corrector")
+    corrector_menu.addAction(action["question"])
+    corrector_button = QToolButton()
+    corrector_button.setText(self.app.trans.objectT("corrector"))
+    corrector_button.setMenu(corrector_menu)
+    corrector_button.setPopupMode(QToolButton.InstantPopup)
+    corrector_button.setStyleSheet("""
+        QToolButton::menu-indicator {
+            image: none;
+        }
+    """)
+
     system_menu = QMenu("System")
     system_menu.addAction(action["role"])
     system_menu.addAction(action["account"])
@@ -95,12 +107,14 @@ def tool_bar(self, action, login_window):
     if role_code == "ADMIN":
         toolbar_widget.addWidget(home_button)
         toolbar_widget.addWidget(category_button)
+        toolbar_widget.addWidget(corrector_button)
         toolbar_widget.addWidget(system_button)
         toolbar_widget.addWidget(preference_button)
         toolbar_widget.addWidget(logout_button)
-    elif role_code == "EXAM_ENTRANTS":
+    elif role_code == "EXAM_CORECTOR":
+        toolbar_widget.addWidget(corrector_button)
+        toolbar_widget.addWidget(preference_button)
         toolbar_widget.addWidget(logout_button)
-
     return toolbar_widget
 
 
