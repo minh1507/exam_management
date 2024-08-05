@@ -16,15 +16,6 @@ class ExamService(BaseService):
         })
         return response.json()
 
-    def update_exam(self, exam_id, new_data):
-        payload = {
-            "order": new_data.get('order'),
-            "code": new_data.get('code'),
-            "name": new_data.get('name')
-        }
-        response = self.put(self.wrap_url(f"exam/{exam_id}/"), json=payload)
-        return response.json()
-
     def delete_exam(self, exam_id):
         response = self.delete(self.wrap_url(f"exam/{exam_id}"))
         return response.json()
