@@ -67,6 +67,18 @@ def tool_bar(self, action, login_window):
         }
     """)
 
+    presenter_menu = QMenu("presenter")
+    presenter_menu.addAction(action["exam"])
+    presenter_button = QToolButton()
+    presenter_button.setText(self.app.trans.objectT("presenter"))
+    presenter_button.setMenu(presenter_menu)
+    presenter_button.setPopupMode(QToolButton.InstantPopup)
+    presenter_button.setStyleSheet("""
+        QToolButton::menu-indicator {
+            image: none;
+        }
+    """)
+
     system_menu = QMenu("System")
     system_menu.addAction(action["role"])
     system_menu.addAction(action["account"])
@@ -107,12 +119,17 @@ def tool_bar(self, action, login_window):
     if role_code == "ADMIN":
         toolbar_widget.addWidget(home_button)
         toolbar_widget.addWidget(category_button)
+        toolbar_widget.addWidget(presenter_button)
         toolbar_widget.addWidget(corrector_button)
         toolbar_widget.addWidget(system_button)
         toolbar_widget.addWidget(preference_button)
         toolbar_widget.addWidget(logout_button)
     elif role_code == "EXAM_CORECTOR":
         toolbar_widget.addWidget(corrector_button)
+        toolbar_widget.addWidget(preference_button)
+        toolbar_widget.addWidget(logout_button)
+    elif role_code == "EXAM_PRESENTER":
+        toolbar_widget.addWidget(presenter_button)
         toolbar_widget.addWidget(preference_button)
         toolbar_widget.addWidget(logout_button)
     return toolbar_widget

@@ -18,7 +18,12 @@
         "code": "code",
         "corrector": "corrector",
         "question": "question",
-        "refresh": "refresh"
+        "refresh": "refresh",
+        "presenter": "presenter",
+        "exam": "exam",
+        "supervisor": "supervisor",
+        "number_of_question": "Number of question",
+        "expired_time": "Expired time"
     },
     "message": {
         "required": "required",

@@ -1,5 +1,5 @@
 from PyQt5.QtWidgets import QAction, QStackedWidget
-from ..view import Home, Subject, Role, Account, Preference, Question
+from ..view import Home, Subject, Role, Account, Preference, Question, Exam
 
 def body(self):
     self.stacked_widget = QStackedWidget()
@@ -10,6 +10,7 @@ def body(self):
     self.account = Account()
     self.preference = Preference()
     self.question = Question()
+    self.exam = Exam()
 
     self.stacked_widget.addWidget(self.home)
     self.stacked_widget.addWidget(self.subject)
@@ -17,6 +18,7 @@ def body(self):
     self.stacked_widget.addWidget(self.account)
     self.stacked_widget.addWidget(self.preference)
     self.stacked_widget.addWidget(self.question)
+    self.stacked_widget.addWidget(self.exam)
 
     home_action = QAction('Home', self)
     subject_action = QAction(self.app.trans.objectT("subject"), self)
@@ -24,6 +26,7 @@ def body(self):
     account_action = QAction(self.app.trans.objectT("account"), self)
     preference_action = QAction(self.app.trans.objectT("preference"), self)
     question_action = QAction(self.app.trans.objectT("question"), self)
+    exam_action = QAction(self.app.trans.objectT("exam"), self)
 
     home_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.home))
     subject_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.subject))
@@ -31,6 +34,7 @@ def body(self):
     account_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.account))
     preference_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.preference))
     question_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.question))
+    exam_action.triggered.connect(lambda: self.stacked_widget.setCurrentWidget(self.exam))
 
     body = dict()
 
@@ -41,6 +45,7 @@ def body(self):
     body["action"]["account"] = account_action
     body["action"]["preference"] = preference_action
     body["action"]["question"] = question_action
+    body["action"]["exam"] = exam_action
 
     body["main"] = self.stacked_widget
     return body
