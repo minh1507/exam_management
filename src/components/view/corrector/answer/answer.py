@@ -314,7 +314,6 @@ class Answer(QDialog):
         create_button.clicked.connect(self.open_create_dialog)
         content_layout.addWidget(create_button, alignment=Qt.AlignTop)
 
-        # Add cards layout
         self.cards_layout = QVBoxLayout()
         self.cards_layout.setContentsMargins(0, 0, 0, 0)
         self.cards_layout.setSpacing(10)
@@ -379,7 +378,6 @@ class Answer(QDialog):
 
         card_layout.addWidget(result_label)
 
-        # Create button layout
         button_layout = QHBoxLayout()
         button_layout.setContentsMargins(5, 5, 5, 5)
         button_layout.setSpacing(10)

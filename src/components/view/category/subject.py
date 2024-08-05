@@ -397,7 +397,6 @@ class Subject(ScrollableWidget):
         card_layout.addWidget(code_label)
         card_layout.addWidget(order_label)
 
-        # Create button layout
         button_layout = QHBoxLayout()
         button_layout.setContentsMargins(5, 5, 5, 5)
         button_layout.setSpacing(10)
