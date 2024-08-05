@@ -1,3 +1,4 @@
+from datetime import datetime
 class StringHelper:
     def parse_question_mark(mark):
         try:
@@ -8,3 +9,6 @@ class StringHelper:
                 return float_value 
         except ValueError:
             raise ValueError("Input cannot be converted to a number.")
+    def format_timez(iso_datetime_str):
+        dt = datetime.fromisoformat(iso_datetime_str)
+        return dt.strftime('%d %B %Y [%H:%M]')

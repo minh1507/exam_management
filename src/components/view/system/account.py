@@ -133,7 +133,6 @@ class DeleteDialog(QDialog):
     def init_ui(self):
         layout = QVBoxLayout(self)
 
-        # Message Label
         message_label = QLabel('Are you sure you want to delete this row?', self)
         message_label.setStyleSheet("font-size: 16px; padding: 20px;")
         layout.addWidget(message_label)

@@ -8,13 +8,16 @@ from PyQt5.QtWidgets import (
     QDateTimeEdit,
     QFormLayout,
     QHBoxLayout,
-    QComboBox
+    QComboBox,
+    QScrollArea,
+    QWidget,
+    QGroupBox,
 )
 from PyQt5.QtCore import Qt
 import sys
 import os
 from ..base import ScrollableWidget
-from PyQt5.QtGui import QIcon
+from PyQt5.QtGui import QIcon, QPixmap
 project_root = os.path.abspath(
     os.path.join(
         os.path.dirname(__file__),
@@ -23,6 +26,9 @@ sys.path.append(project_root)
 from src.services.subject import SubjectService
 from src.services.exam import ExamService
 from src.common.i18n.lang import Trans
+import requests
+import pytz
+from src.common.helper.string import StringHelper
 
 class CreateDialog(QDialog):
     def __init__(self, parent=None):
@@ -58,10 +64,12 @@ class CreateDialog(QDialog):
 
         self.expired_time_input = QDateTimeEdit(self)
         self.expired_time_input.setStyleSheet("padding: 10px;")
+        self.expired_time_input.setDisplayFormat("yyyy-MM-dd HH:mm:ss")
         form_layout.addRow(QLabel('Expired time'), self.expired_time_input)
 
         self.start_time_input = QDateTimeEdit(self)
         self.start_time_input.setStyleSheet("padding: 10px;")
+        self.start_time_input.setDisplayFormat("yyyy-MM-dd HH:mm:ss")
         form_layout.addRow(QLabel('Start time'), self.start_time_input)
 
         self.subject_input = QComboBox(self)
@@ -130,11 +138,21 @@ class CreateDialog(QDialog):
         self.error_label.setVisible(True)
 
     def get_data(self):
+        tz = pytz.timezone('Asia/Bangkok')
+        
+        start_time = self.start_time_input.dateTime().toPyDateTime()
+        start_time = tz.localize(start_time, is_dst=None)
+        start_time_str = start_time.astimezone(pytz.UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
+        
+        expired_time = self.expired_time_input.dateTime().toPyDateTime()
+        expired_time = tz.localize(expired_time, is_dst=None)
+        expired_time_str = expired_time.astimezone(pytz.UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
+
         return {
             'supervisor': self.supervisor_input.text(),
             'code': self.code_input.text(),
-            'start_time': self.start_time_input.date().toPyDate().strftime("%Y-%m-%d"),
-            'expired_time': self.expired_time_input.date().toPyDate().strftime("%Y-%m-%d"),
+            'start_time': start_time_str,
+            'expired_time': expired_time_str,
             "total_question": self.total_question_input.text(),
             'subject': next((subject['id'] for subject in self.subjects if subject['name'] == self.subject_input.currentText()), None),
         }
@@ -203,67 +221,82 @@ class DeleteDialog(QDialog):
         self.setMinimumSize(300, 150)
 
 class Detail(QDialog):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, questions=None):
         super().__init__(parent)
         self.setWindowTitle('Detail subject')
         self.setWindowIcon(QIcon("src/assets/icon/profile.png"))
+        self.questions = questions
         self.init_ui()
 
     def init_ui(self):
         layout = QVBoxLayout(self)
+        layout.setContentsMargins(20, 20, 20, 20)
+        layout.setSpacing(15)
 
-        message_label = QLabel('Are you sure you want to delete this row?', self)
-        message_label.setStyleSheet("font-size: 16px; padding: 20px;")
-        layout.addWidget(message_label)
+        scroll_area = QScrollArea()
+        scroll_area.setWidgetResizable(True)
+        content_widget = QWidget()
+        scroll_layout = QVBoxLayout(content_widget)
+        scroll_layout.setSpacing(15)
 
-        yes_button = QPushButton('Yes', self)
-        yes_button.setStyleSheet("""
-            QPushButton {
-                background-color: #28a745;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #218838;
-            }
-            QPushButton:pressed {
-                background-color: #1e7e34;
-            }
-        """)
-        yes_button.clicked.connect(self.accept)
+        for question in self.questions:
+            question_box = QGroupBox()
+            question_box.setStyleSheet("""
+                QGroupBox {
+                    border: 1px solid #d3d3d3;
+                    border-radius: 5px;
+                    margin-top: 15px;
+                }
+                QGroupBox::title {
+                    subcontrol-origin: margin;
+                    subcontrol-position: top center;
+                    padding: 0 3px;
+                }
+            """)
+            question_layout = QVBoxLayout()
+            question_layout.setSpacing(10)
 
-        no_button = QPushButton('No', self)
-        no_button.setStyleSheet("""
-            QPushButton {
-                background-color: #dc3545;
-                color: white;
-                border: none;
-                border-radius: 5px;
-                padding: 10px 15px;
-                font-size: 14px;
-            }
-            QPushButton:hover {
-                background-color: #c82333;
-            }
-            QPushButton:pressed {
-                background-color: #bd2130;
-            }
-        """)
-        no_button.clicked.connect(self.reject)
+            question_content = QLabel(f"Question: {question['content']}")
+            question_content.setStyleSheet("font-weight: bold; font-size: 16px;")
+            question_layout.addWidget(question_content)
 
-        button_layout = QHBoxLayout()
-        button_layout.addWidget(yes_button)
-        button_layout.addWidget(no_button)
-        button_layout.setStretch(0, 1)
-        button_layout.setStretch(1, 1)
+            if question['image']:
+                image_label = QLabel()
+                image_url = question['image']['file']
+                image_data = requests.get(image_url).content
+                pixmap = QPixmap()
+                pixmap.loadFromData(image_data)
+                image_label.setPixmap(pixmap.scaledToWidth(400, Qt.SmoothTransformation))
+                image_label.setAlignment(Qt.AlignCenter)
+                image_label.setStyleSheet("margin: 10px 0;")
+                question_layout.addWidget(image_label)
 
-        layout.addLayout(button_layout)
-        layout.setContentsMargins(20, 20, 20, 20) 
+            answer_count = 1
+            for answer in question['answers']:
+                answer_content = QLabel(f"Answer {answer_count}: {answer['content']}")
+                answer_content.setStyleSheet("margin-left: 20px;")
+                question_layout.addWidget(answer_content)
+                answer_count += 1
 
-        self.setMinimumSize(300, 150)
+            arr_list_answer = [item for item in question['answers'] if item['isResult'] == True]
+
+            if len(arr_list_answer) > 0:
+                right_label_content = QLabel("Right answer:")
+                right_label_content.setStyleSheet("font-weight: bold; margin-top: 10px;")
+                question_layout.addWidget(right_label_content)
+                for answer in arr_list_answer:
+                    right_content = QLabel(f"- {answer['content']}")
+                    right_content.setStyleSheet("margin-left: 20px;")
+                    question_layout.addWidget(right_content)
+
+            question_box.setLayout(question_layout)
+            scroll_layout.addWidget(question_box)
+
+        scroll_area.setWidget(content_widget)
+        layout.addWidget(scroll_area)
+
+        self.setLayout(layout)
+        self.setMinimumSize(1000, 500)
 
 class Exam(ScrollableWidget):
     breadcrumbs = ["Home", "Presenter", "Exam"]
@@ -376,13 +409,13 @@ class Exam(ScrollableWidget):
             color: #555;
         """)
 
-        expired_time_label = QLabel(f"Time expired: {exam['expired_time']}")
+        expired_time_label = QLabel(f"Time expired: {StringHelper.format_timez(exam['expired_time'])}")
         expired_time_label.setStyleSheet("""
             font-size: 14px;
             color: #555;
         """)
 
-        start_time_label = QLabel(f"Time start: {exam['start_time']}")
+        start_time_label = QLabel(f"Time start: {StringHelper.format_timez(exam['start_time'])}")
         start_time_label.setStyleSheet("""
             font-size: 14px;
             color: #555;
@@ -424,7 +457,7 @@ class Exam(ScrollableWidget):
                 background-color: #005234;
             }
         """)
-        detail_button.clicked.connect(lambda: self.detail(exam['id']))
+        detail_button.clicked.connect(lambda: self.detail(exam['questions']))
 
         delete_button = QPushButton("Delete")
         delete_button.setFixedWidth(100)
@@ -462,8 +495,9 @@ class Exam(ScrollableWidget):
             self.exam_service.delete_exam(exam_id)
             self.get()
 
-    def detail(self, exam_id):
-        dialog = Detail(self)
+    def detail(self, questions):
+        dialog = Detail(self, questions)
         if dialog.exec_() == QDialog.Accepted:
-            self.exam_service.delete_exam(exam_id)
             self.get()
+
+    

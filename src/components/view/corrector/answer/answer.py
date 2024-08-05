@@ -287,13 +287,11 @@ class Answer(QDialog):
         content_layout = QVBoxLayout(self)
         content_layout.setSpacing(10)
 
-        # Add horizontal line
         line = QFrame()
         line.setFrameShape(QFrame.HLine)
         line.setFrameShadow(QFrame.Sunken)
         content_layout.addWidget(line, alignment=Qt.AlignTop)
 
-        # Add create button
         create_button = QPushButton("Create")
         create_button.setFixedSize(100, 30)
         create_button.setStyleSheet("""
