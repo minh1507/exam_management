@@ -202,6 +202,69 @@ class DeleteDialog(QDialog):
 
         self.setMinimumSize(300, 150)
 
+class Detail(QDialog):
+    def __init__(self, parent=None):
+        super().__init__(parent)
+        self.setWindowTitle('Detail subject')
+        self.setWindowIcon(QIcon("src/assets/icon/profile.png"))
+        self.init_ui()
+
+    def init_ui(self):
+        layout = QVBoxLayout(self)
+
+        message_label = QLabel('Are you sure you want to delete this row?', self)
+        message_label.setStyleSheet("font-size: 16px; padding: 20px;")
+        layout.addWidget(message_label)
+
+        yes_button = QPushButton('Yes', self)
+        yes_button.setStyleSheet("""
+            QPushButton {
+                background-color: #28a745;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #218838;
+            }
+            QPushButton:pressed {
+                background-color: #1e7e34;
+            }
+        """)
+        yes_button.clicked.connect(self.accept)
+
+        no_button = QPushButton('No', self)
+        no_button.setStyleSheet("""
+            QPushButton {
+                background-color: #dc3545;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 10px 15px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #c82333;
+            }
+            QPushButton:pressed {
+                background-color: #bd2130;
+            }
+        """)
+        no_button.clicked.connect(self.reject)
+
+        button_layout = QHBoxLayout()
+        button_layout.addWidget(yes_button)
+        button_layout.addWidget(no_button)
+        button_layout.setStretch(0, 1)
+        button_layout.setStretch(1, 1)
+
+        layout.addLayout(button_layout)
+        layout.setContentsMargins(20, 20, 20, 20) 
+
+        self.setMinimumSize(300, 150)
+
 class Exam(ScrollableWidget):
     breadcrumbs = ["Home", "Presenter", "Exam"]
 
@@ -343,6 +406,26 @@ class Exam(ScrollableWidget):
         button_layout.setSpacing(10)
         button_layout.setAlignment(Qt.AlignLeft)
 
+        detail_button = QPushButton("Detail")
+        detail_button.setFixedWidth(100)
+        detail_button.setStyleSheet("""
+            QPushButton {
+                background-color: #04AA6D;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #005234;
+            }
+            QPushButton:pressed {
+                background-color: #005234;
+            }
+        """)
+        detail_button.clicked.connect(lambda: self.detail(exam['id']))
+
         delete_button = QPushButton("Delete")
         delete_button.setFixedWidth(100)
         delete_button.setStyleSheet("""
@@ -363,6 +446,7 @@ class Exam(ScrollableWidget):
         """)
         delete_button.clicked.connect(lambda: self.delete(exam['id']))
 
+        button_layout.addWidget(detail_button)
         button_layout.addWidget(delete_button)
 
         card_layout.addLayout(button_layout)
@@ -374,6 +458,12 @@ class Exam(ScrollableWidget):
 
     def delete(self, exam_id):
         dialog = DeleteDialog(self)
+        if dialog.exec_() == QDialog.Accepted:
+            self.exam_service.delete_exam(exam_id)
+            self.get()
+
+    def detail(self, exam_id):
+        dialog = Detail(self)
         if dialog.exec_() == QDialog.Accepted:
             self.exam_service.delete_exam(exam_id)
             self.get()
