@@ -5,7 +5,6 @@ from PyQt5.QtWidgets import (
     QPushButton,
     QDialog,
     QLineEdit,
-    QDateTimeEdit,
     QFormLayout,
     QHBoxLayout,
     QComboBox,
@@ -27,7 +26,6 @@ from src.services.subject import SubjectService
 from src.services.exam import ExamService
 from src.common.i18n.lang import Trans
 import requests
-import pytz
 from src.common.helper.string import StringHelper
 
 class CreateDialog(QDialog):
@@ -62,15 +60,10 @@ class CreateDialog(QDialog):
         self.total_question_input.setStyleSheet("padding: 10px; border: 1px solid #ddd; border-radius: 5px;")
         form_layout.addRow(QLabel('Number of question'), self.total_question_input)
 
-        self.expired_time_input = QDateTimeEdit(self)
-        self.expired_time_input.setStyleSheet("padding: 10px;")
-        self.expired_time_input.setDisplayFormat("yyyy-MM-dd HH:mm:ss")
-        form_layout.addRow(QLabel('Expired time'), self.expired_time_input)
-
-        self.start_time_input = QDateTimeEdit(self)
-        self.start_time_input.setStyleSheet("padding: 10px;")
-        self.start_time_input.setDisplayFormat("yyyy-MM-dd HH:mm:ss")
-        form_layout.addRow(QLabel('Start time'), self.start_time_input)
+        self.duration_input = QLineEdit(self)
+        self.duration_input.setPlaceholderText("Duration")
+        self.duration_input.setStyleSheet("padding: 10px; border: 1px solid #ddd; border-radius: 5px;")
+        form_layout.addRow(QLabel('Duration'), self.duration_input)
 
         self.subject_input = QComboBox(self)
         self.subject_input.addItems([subject['name'] for subject in self.subjects])
@@ -138,21 +131,10 @@ class CreateDialog(QDialog):
         self.error_label.setVisible(True)
 
     def get_data(self):
-        tz = pytz.timezone('Asia/Bangkok')
-        
-        start_time = self.start_time_input.dateTime().toPyDateTime()
-        start_time = tz.localize(start_time, is_dst=None)
-        start_time_str = start_time.astimezone(pytz.UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
-        
-        expired_time = self.expired_time_input.dateTime().toPyDateTime()
-        expired_time = tz.localize(expired_time, is_dst=None)
-        expired_time_str = expired_time.astimezone(pytz.UTC).strftime("%Y-%m-%dT%H:%M:%S.%f")[:-3] + 'Z'
-
         return {
             'supervisor': self.supervisor_input.text(),
             'code': self.code_input.text(),
-            'start_time': start_time_str,
-            'expired_time': expired_time_str,
+            'duration': self.duration_input.text(),
             "total_question": self.total_question_input.text(),
             'subject': next((subject['id'] for subject in self.subjects if subject['name'] == self.subject_input.currentText()), None),
         }
@@ -409,17 +391,12 @@ class Exam(ScrollableWidget):
             color: #555;
         """)
 
-        expired_time_label = QLabel(f"Time expired: {StringHelper.format_timez(exam['expired_time'])}")
-        expired_time_label.setStyleSheet("""
+        duration_label = QLabel(f"Duration: {exam['duration']}")
+        duration_label.setStyleSheet("""
             font-size: 14px;
             color: #555;
         """)
 
-        start_time_label = QLabel(f"Time start: {StringHelper.format_timez(exam['start_time'])}")
-        start_time_label.setStyleSheet("""
-            font-size: 14px;
-            color: #555;
-        """)
 
         total_question_label = QLabel(f"Number of question: {exam['total_question']}")
         total_question_label.setStyleSheet("""
@@ -430,8 +407,7 @@ class Exam(ScrollableWidget):
         card_layout.addWidget(code_label)
         card_layout.addWidget(subject_label)
         card_layout.addWidget(supervisor_label)
-        card_layout.addWidget(expired_time_label)
-        card_layout.addWidget(start_time_label)
+        card_layout.addWidget(duration_label)
         card_layout.addWidget(total_question_label)
 
         button_layout = QHBoxLayout()

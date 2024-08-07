@@ -9,8 +9,7 @@ class ExamService(BaseService):
         response = self.post(self.wrap_url("exam/"), json={
             "supervisor": new_data.get('supervisor'),
             "code": new_data.get('code'),
-            "start_time": new_data.get('start_time'),
-            "expired_time": new_data.get('expired_time'),
+            "duration": new_data.get('duration'),
             "total_question": new_data.get('total_question'),
             "subject": new_data.get('subject'),
         })
