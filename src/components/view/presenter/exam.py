@@ -281,7 +281,7 @@ class Detail(QDialog):
         self.setMinimumSize(1000, 500)
 
 class Exam(ScrollableWidget):
-    breadcrumbs = ["Home", "Presenter", "Exam"]
+    breadcrumbs = ["Home", "Tool", "Exam"]
 
     def __init__(self):
         super().__init__()

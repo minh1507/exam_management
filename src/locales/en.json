@@ -23,7 +23,8 @@
         "exam": "exam",
         "supervisor": "supervisor",
         "number_of_question": "Number of question",
-        "expired_time": "Expired time"
+        "expired_time": "Expired time",
+        "tool": "tool"
     },
     "message": {
         "required": "required",

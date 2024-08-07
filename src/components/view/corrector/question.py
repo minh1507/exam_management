@@ -8,6 +8,7 @@ from PyQt5.QtWidgets import (
     QFormLayout,
     QHBoxLayout,
 )
+import re
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtNetwork import QNetworkAccessManager, QNetworkRequest, QNetworkReply
 from PyQt5.QtCore import QCoreApplication, QUrl
@@ -19,17 +20,22 @@ from PyQt5.QtGui import QIcon
 from PyQt5.QtWidgets import QDialog, QVBoxLayout, QFormLayout, QLineEdit, QLabel, QPushButton, QHBoxLayout, QFileDialog, QCheckBox, QSizePolicy, QSplitter, QWidget, QComboBox
 from PyQt5.QtGui import QPixmap
 from PyQt5.QtCore import Qt
-
+from io import BytesIO
+from PIL import Image
+from PyQt5.QtWidgets import QMessageBox
 project_root = os.path.abspath(
     os.path.join(
         os.path.dirname(__file__),
         "../../../../"))
 sys.path.append(project_root)
 from src.services.question import QuestionService
+from src.services.imports import ImportService
 from src.common.i18n.lang import Trans
 from src.services.subject import SubjectService
 from src.common.helper.string import StringHelper
 from src.components.view.corrector.answer.answer import Answer
+from docx import Document
+from src.common.static.global_c import Global
 
 class CreateDialog(QDialog):
     def __init__(self, parent=None):
@@ -390,11 +396,12 @@ class UpdateDialog(QDialog):
         }
 
 class Question(ScrollableWidget):
-    breadcrumbs = ["Home", "Corrector", "Question"]
+    breadcrumbs = ["Home", "Tool", "Question"]
 
     def __init__(self):
         super().__init__()
         self.question_service = QuestionService()
+        self.import_service = ImportService()
         self.data = []
         self.trans = Trans()
         self.init_ui()
@@ -404,6 +411,8 @@ class Question(ScrollableWidget):
         line.setFrameShape(QFrame.HLine)
         line.setFrameShadow(QFrame.Sunken)
         self.content_layout.addWidget(line)
+
+        role_code = Global.data["data"]["role"]["code"]
 
         create_button = QPushButton(self.trans.buttonT("create"))
         create_button.setFixedSize(100, 30)
@@ -425,12 +434,153 @@ class Question(ScrollableWidget):
             }
         """)
         create_button.clicked.connect(self.open_create_dialog)
-        self.content_layout.addWidget(create_button)
+        
+
+        import_button = QPushButton("Import")
+        import_button.setFixedSize(100, 30)
+        import_button.setStyleSheet("""
+            QPushButton {
+                background-color: #007bff !important;
+                font-weight: bold;
+                color: white;
+                border: none;
+                border-radius: 5px;
+                padding: 5px 10px;
+                font-size: 14px;
+            }
+            QPushButton:hover {
+                background-color: #0056b3;
+            }
+            QPushButton:pressed {
+                background-color: #004085;
+            }
+        """)
+        import_button.clicked.connect(self.import_docx)
+
+        if role_code == "ADMIN":
+            self.content_layout.addWidget(create_button)
+            self.content_layout.addWidget(import_button)
+        elif role_code == "EXAM_CORECTOR":
+            self.content_layout.addWidget(create_button)
+        elif role_code == "EXAM_ENTRANTS":
+            self.content_layout.addWidget(import_button)
 
         self.cards_layout = QVBoxLayout()
         self.cards_layout.setContentsMargins(0, 0, 0, 0)
         self.cards_layout.setSpacing(10)
         self.content_layout.addLayout(self.cards_layout)
+
+    def import_docx(self):
+        options = QFileDialog.Options()
+        file_name, _ = QFileDialog.getOpenFileName(self, "Import .docx File", "", "Word Files (*.docx)", options=options)
+        if file_name:
+            data = self.load_docx(file_name)
+            self.import_service.import_question(data)
+        self.get()
+    
+    def show_error_dialog(self, message):
+        msg_box = QMessageBox()
+        msg_box.setIcon(QMessageBox.Critical)
+        msg_box.setWindowTitle("Error")
+        msg_box.setText(message)
+        msg_box.setStandardButtons(QMessageBox.Ok)
+        msg_box.exec_()
+
+    def load_docx(self, file_path):
+        try:
+            index = 1
+            index_sub = 1
+            table_arr = []
+
+            document = Document(file_path)
+
+            subject = ''
+            lecturer = ''
+            for para in document.paragraphs:
+                if para.text.startswith('Subject:'):
+                    subject = para.text.split(':', 1)[1].strip()
+                if para.text.startswith('Lecturer:'):
+                    lecturer = para.text.split(':', 1)[1].strip()
+
+            for table in document.tables:
+                index_sub = 1
+                value_table = dict()
+                answer = [] 
+                if len(table.rows) != 9:
+                    self.show_error_dialog("Some table does not have 9 rows.")
+                    return
+                for row in table.rows:  
+                    row_data = []       
+                    for cell_index, cell in enumerate(row.cells):
+                        cell_text = ''                                                         
+                        for paragraph in cell.paragraphs:
+                            for run in paragraph.runs:
+                                text = run.text 
+                                text = re.sub(r'\n\[file:[^\]]+\]\n', '', text)
+                                cell_text += text
+                                
+                                if run.element.xpath('.//a:blip'):
+                                    image_part = run.element.xpath('.//a:blip/@r:embed')[0]
+                                    image_blob = document.part.related_parts[image_part]
+                                    
+                                    image_data = BytesIO(image_blob.blob)
+                                    
+                                    image = Image.open(image_data)
+                                    
+                                    if cell_index == index_sub:
+                                        value_table["image"] = image
+                        
+                        row_data.append(cell_text.strip())
+                    merit = dict()
+                    if index_sub == 1:
+                        value_table['code'] = row_data[0]
+                        value_table['content'] = row_data[1]
+                    if index_sub == 2:
+                        merit["content"] = row_data[1]
+                        merit["isResult"] = False
+                        answer.append(merit)
+                    if index_sub == 3:
+                        merit["content"] = row_data[1]
+                        merit["isResult"] = False
+                        answer.append(merit)
+                    if index_sub == 4:
+                        merit["content"] = row_data[1]
+                        merit["isResult"] = False
+                        answer.append(merit)
+                    if index_sub == 5:
+                        merit["content"] = row_data[1]
+                        merit["isResult"] = False
+                        answer.append(merit)
+                    if index_sub == 6:
+                        if row_data[1] == 'A':
+                            answer[0]['isResult'] = True
+                        if row_data[1] == 'B':
+                            answer[1]['isResult'] = True
+                        if row_data[1] == 'C':
+                            answer[2]['isResult'] = True
+                        if row_data[1] == 'D':
+                            answer[3]['isResult'] = True
+                    if index_sub == 7:
+                        value_table['mark'] = row_data[1]
+                    if index_sub == 8:
+                        value_table['unit'] = row_data[1]    
+                    if index_sub == 9:
+                        if row_data[1] == "Yes":
+                            value_table['mixChoice'] = True
+                        else:
+                            value_table['mixChoice'] = False
+                    if len(answer) > 0:
+                        value_table['answers'] = answer
+                    value_table['subject'] = subject
+                    value_table['lecturer'] = lecturer
+                    index_sub+=1
+                table_arr.append(value_table)
+                index+=1
+
+            return table_arr
+        except Exception as e:
+            print(e)
+            self.show_error_dialog("Invalid file")
 
     def showEvent(self, event):
         super().showEvent(event)
@@ -585,9 +735,11 @@ class Question(ScrollableWidget):
         """)
         answer_button.clicked.connect(lambda: self.answer(question['id']))
 
-        button_layout.addWidget(update_button)
-        button_layout.addWidget(delete_button)
-        button_layout.addWidget(answer_button)
+        role_code = Global.data["data"]["role"]["code"]
+        if role_code != "EXAM_ENTRANTS":
+            button_layout.addWidget(update_button)
+            button_layout.addWidget(delete_button)
+            button_layout.addWidget(answer_button)
 
         card_layout.addLayout(button_layout)
 

@@ -15,6 +15,7 @@ pyjwt = "*"
 matplotlib = "*"
 pyi18n-v2 = "*"
 pytz = "*"
+python-docx = "*"
 
 [dev-packages]
 
